@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#16a34a" />
+<title>GreenQuest 🌱 — Track Your Eco Habits</title>
+<style>
+  /* ---------- Base look & feel ---------- */
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --green: #16a34a;
+    --green-dark: #15803d;
+    --leaf: #22c55e;
+    --sky: #38bdf8;
+    --amber: #f59e0b;
+    --bg1: #ecfdf5;
+    --bg2: #d1fae5;
+    --card: #ffffff;
+    --text: #14532d;
+    --muted: #4b7a5e;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(160deg, var(--bg1), var(--bg2));
+    min-height: 100vh;
+    padding: 18px 14px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; }
+
+  /* ---------- Header ---------- */
+  header { text-align: center; margin-bottom: 18px; }
+  h1 { font-size: 2rem; letter-spacing: -0.5px; }
+  h1 .seed { display: inline-block; animation: sway 3s ease-in-out infinite; }
+  @keyframes sway { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+  .tagline { color: var(--muted); font-size: 0.95rem; margin-top: 4px; }
+
+  /* ---------- Stats row ---------- */
+  .stats { display: flex; gap: 10px; margin-bottom: 16px; }
+  .stat {
+    flex: 1; background: var(--card); border-radius: 18px; padding: 14px 10px;
+    text-align: center; box-shadow: 0 6px 18px rgba(20,83,45,0.08);
+  }
+  .stat .num { font-size: 1.7rem; font-weight: 800; line-height: 1; }
+  .stat .label { font-size: 0.72rem; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat.score .num { color: var(--green); }
+  .stat.streak .num { color: var(--amber); }
+  .stat.today .num { color: var(--sky); }
+
+  /* ---------- Level + progress bar ---------- */
+  .level-card {
+    background: var(--card); border-radius: 22px; padding: 16px 18px; margin-bottom: 18px;
+    box-shadow: 0 6px 18px rgba(20,83,45,0.08);
+  }
+  .level-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .level-name { font-weight: 800; font-size: 1.1rem; }
+  .level-next { font-size: 0.8rem; color: var(--muted); }
+  .bar { background: #e2e8f0; border-radius: 999px; height: 18px; overflow: hidden; }
+  .bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--leaf), var(--sky));
+    border-radius: 999px; transition: width 0.6s cubic-bezier(.22,1,.36,1);
+  }
+
+  /* ---------- Habit list ---------- */
+  .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 4px 4px 10px; }
+  .habit {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border-radius: 18px; padding: 14px 16px; margin-bottom: 12px;
+    box-shadow: 0 4px 14px rgba(20,83,45,0.07);
+    cursor: pointer; user-select: none;
+    border: 2px solid transparent;
+    transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .habit:active { transform: scale(0.98); }
+  .habit .emoji { font-size: 1.8rem; width: 44px; height: 44px; display: grid; place-items: center; background: var(--bg2); border-radius: 14px; flex-shrink: 0; }
+  .habit .info { flex: 1; }
+  .habit .name { font-weight: 700; font-size: 1rem; }
+  .habit .pts { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .habit .check {
+    width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid #cbd5e1;
+    display: grid; place-items: center; flex-shrink: 0; transition: all 0.2s ease;
+    font-weight: 900; color: transparent;
+  }
+  .habit.done { border-color: var(--leaf); background: #f0fdf4; }
+  .habit.done .check { background: var(--leaf); border-color: var(--leaf); color: white; }
+  .habit.done .emoji { background: #dcfce7; }
+
+  /* ---------- Buttons ---------- */
+  .actions { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  button.action {
+    border: none; border-radius: 16px; padding: 14px; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: transform 0.12s ease, opacity 0.2s ease;
+  }
+  button.action:active { transform: scale(0.97); }
+  .btn-ghost { background: transparent; color: var(--muted); box-shadow: none; }
+  .btn-ghost:active { opacity: 0.6; }
+
+  footer { text-align: center; margin-top: 26px; color: var(--muted); font-size: 0.8rem; }
+
+  /* ---------- Celebration toast ---------- */
+  #toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(120px);
+    background: var(--green-dark); color: white; padding: 14px 22px; border-radius: 999px;
+    font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(.22,1,.36,1);
+    z-index: 50; max-width: 90%; text-align: center;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Confetti ---------- */
+  .confetti {
+    position: fixed; top: -10px; width: 10px; height: 14px; z-index: 40; pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(105vh) rotate(720deg); opacity: 0.9; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1><span class="seed">🌱</span> GreenQuest</h1>
+      <p class="tagline">Small green habits, every single day.</p>
+    </header>
+
+    <!-- Score / Streak / Today -->
+    <div class="stats">
+      <div class="stat score"><div class="num" id="totalScore">0</div><div class="label">Total Points</div></div>
+      <div class="stat streak"><div class="num" id="streak">0</div><div class="label">Day Streak 🔥</div></div>
+      <div class="stat today"><div class="num" id="todayPts">0</div><div class="label">Today</div></div>
+    </div>
+
+    <!-- Level + progress -->
+    <div class="level-card">
+      <div class="level-top">
+        <span class="level-name" id="levelName">🌱 Sprout</span>
+        <span class="level-next" id="levelNext"></span>
+      </div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+    </div>
+
+    <!-- Habits -->
+    <div class="section-title">Today's Eco-Habits</div>
+    <div id="habitList"></div>
+
+    <div class="actions">
+      <button class="action btn-ghost" id="resetBtn">↺ Reset all my progress</button>
+    </div>
+
+    <footer>Your progress is saved on this device automatically.<br/>Come back tomorrow to grow your streak! 🌍</footer>
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+/* =========================================================
+   GreenQuest — all logic lives here, no internet needed.
+   Data is stored in your browser's "localStorage" so it
+   stays even after you close the page.
+   ========================================================= */
+
+  // The 5 starter habits. Each has an icon, a name, and points.
+  const HABITS = [
+    { id: 'bottle',   emoji: '🚰', name: 'Used a reusable bottle',   pts: 10 },
+    { id: 'transit',  emoji: '🚌', name: 'Took public transport',     pts: 20 },
+    { id: 'meatless', emoji: '🥗', name: 'Ate a meatless meal',        pts: 15 },
+    { id: 'lights',   emoji: '💡', name: 'Switched off unused lights', pts: 10 },
+    { id: 'bag',      emoji: '🛍️', name: 'Used a reusable bag',        pts: 10 },
+  ];
+
+  // The "levels" you climb as your total points grow.
+  const LEVELS = [
+    { min: 0,   name: '🌱 Sprout' },
+    { min: 100, name: '🌿 Seedling' },
+    { min: 250, name: '🍀 Grower' },
+    { min: 500, name: '🌳 Tree Hugger' },
+    { min: 900, name: '🌲 Eco Hero' },
+    { min: 1500,name: '🏆 Planet Guardian' },
+  ];
+
+  const KEY = 'greenquest-v1';
+
+  // Get today's date as a simple text key like "2026-06-17".
+  function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  // Load saved data, or start fresh if there's none.
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { total: 0, streak: 0, lastDay: null, checkedDay: null, checked: {} };
+  }
+
+  function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+  let state = load();
+
+  // If it's a new day, clear today's checkmarks (but keep total + streak).
+  function rolloverIfNeeded() {
+    if (state.checkedDay !== todayKey()) {
+      state.checkedDay = todayKey();
+      state.checked = {};
+      save();
+    }
+  }
+
+  // Work out which level you're on and how close to the next one.
+  function levelInfo() {
+    let current = LEVELS[0], next = null;
+    for (let i = 0; i < LEVELS.length; i++) {
+      if (state.total >= LEVELS[i].min) { current = LEVELS[i]; next = LEVELS[i+1] || null; }
+    }
+    let pct = 100;
+    let nextText = "Max level reached! 🌟";
+    if (next) {
+      const span = next.min - current.min;
+      pct = Math.round(((state.total - current.min) / span) * 100);
+      nextText = (next.min - state.total) + ' pts to ' + next.name;
+    }
+    return { current, pct, nextText };
+  }
+
+  // Redraw everything on screen from the current data.
+  function render() {
+    rolloverIfNeeded();
+
+    // Today's points = sum of checked habits.
+    let todayPts = 0;
+    HABITS.forEach(h => { if (state.checked[h.id]) todayPts += h.pts; });
+
+    document.getElementById('totalScore').textContent = state.total;
+    document.getElementById('streak').textContent = state.streak;
+    document.getElementById('todayPts').textContent = todayPts;
+
+    const li = levelInfo();
+    document.getElementById('levelName').textContent = li.current.name;
+    document.getElementById('levelNext').textContent = li.nextText;
+    document.getElementById('barFill').style.width = Math.max(0, Math.min(100, li.pct)) + '%';
+
+    // Build the habit cards.
+    const listEl = document.getElementById('habitList');
+    listEl.innerHTML = '';
+    HABITS.forEach(h => {
+      const done = !!state.checked[h.id];
+      const card = document.createElement('div');
+      card.className = 'habit' + (done ? ' done' : '');
+      card.innerHTML =
+        '<div class="emoji">' + h.emoji + '</div>' +
+        '<div class="info"><div class="name">' + h.name + '</div>' +
+        '<div class="pts">+' + h.pts + ' points</div></div>' +
+        '<div class="check">✓</div>';
+      card.addEventListener('click', () => toggle(h));
+      listEl.appendChild(card);
+    });
+  }
+
+  // Check or uncheck a habit, update points + streak.
+  function toggle(h) {
+    rolloverIfNeeded();
+    const wasDone = !!state.checked[h.id];
+
+    if (wasDone) {
+      // Unchecking: take the points back.
+      delete state.checked[h.id];
+      state.total = Math.max(0, state.total - h.pts);
+    } else {
+      // Checking: add points.
+      state.checked[h.id] = true;
+      state.total += h.pts;
+
+      // Update the streak the first time you check anything today.
+      if (state.lastDay !== todayKey()) {
+        const yesterday = yesterdayKey();
+        state.streak = (state.lastDay === yesterday) ? state.streak + 1 : 1;
+        state.lastDay = todayKey();
+      }
+      celebrate(h);
+    }
+    save();
+    render();
+  }
+
+  function yesterdayKey() {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  // Fun reward: a little message + confetti when you complete a habit.
+  function celebrate(h) {
+    const allDone = HABITS.every(x => state.checked[x.id]);
+    showToast(allDone ? '🎉 All habits done today! You legend!' : '+' + h.pts + ' points! Nice one 🌿');
+    burstConfetti(allDone ? 60 : 22);
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 1900);
+  }
+
+  function burstConfetti(count) {
+    const colors = ['#22c55e','#38bdf8','#f59e0b','#16a34a','#a3e635','#34d399'];
+    for (let i = 0; i < count; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDuration = (1.2 + Math.random() * 1.3) + 's';
+      c.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2600);
+    }
+  }
+
+  // Reset button — wipes everything after a confirmation.
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (confirm('Start over? This clears your points, streak and today\'s checks.')) {
+      state = { total: 0, streak: 0, lastDay: null, checkedDay: todayKey(), checked: {} };
+      save();
+      render();
+      showToast('Fresh start! 🌱');
+    }
+  });
+
+  // First draw.
+  render();
+</script>
+</body>
+</html>
