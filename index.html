@@ -130,6 +130,15 @@
   .habit.done { border-color: var(--leaf); background: #f0fdf4; }
   .habit.done .check { background: var(--leaf); border-color: var(--leaf); color: white; }
   .habit.done .emoji { background: #dcfce7; }
+  .sdg-badge { display: inline-block; margin-top: 6px; font-size: 0.64rem; font-weight: 800; color: #fff; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.2px; }
+
+  /* ---------- SDG goals page ---------- */
+  .sdg-intro { color: var(--muted); font-size: 0.85rem; margin: 0 4px 12px; line-height: 1.45; }
+  .sdg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sdg-card { border-radius: 16px; padding: 12px; color: #fff; box-shadow: 0 4px 14px rgba(20,83,45,0.12); display: flex; align-items: center; gap: 10px; min-height: 66px; }
+  .sdg-card .gn { font-size: 1.7rem; font-weight: 900; line-height: 1; flex-shrink: 0; width: 34px; text-align: center; }
+  .sdg-card .gt { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
+  .sdg-card .gactive { opacity: 0.95; }
 
   /* ---------- Buttons ---------- */
   .actions { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
@@ -210,7 +219,7 @@
   footer { text-align: center; margin-top: 22px; color: var(--muted); font-size: 0.78rem; }
 
   /* ---------- Celebration toast ---------- */
-  #toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(140px); background: var(--green-dark); color: white; padding: 14px 22px; border-radius: 999px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(.22,1,.36,1); z-index: 50; max-width: 90%; text-align: center; }
+  #toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(160px); background: var(--green-dark); color: white; padding: 14px 20px; border-radius: 18px; font-weight: 700; font-size: 0.92rem; line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(.22,1,.36,1); z-index: 50; max-width: 92%; width: max-content; text-align: center; }
   #toast.show { transform: translateX(-50%) translateY(0); }
 
   /* ---------- Welcome screen ---------- */
@@ -376,6 +385,13 @@
       <div class="badge-grid" id="badgeGrid"></div>
     </div>
 
+    <!-- ============ SDG goals ============ -->
+    <div class="view" id="view-sdg">
+      <div class="section-title">🌐 The 17 Global Goals</div>
+      <p class="sdg-intro">The UN Sustainable Development Goals — the world's shared plan for a fairer, greener planet by 2030. ★ marks the goals your eco-habits are already helping with!</p>
+      <div class="sdg-grid" id="sdgGrid"></div>
+    </div>
+
     <!-- ============ Teacher dashboard ============ -->
     <div class="view" id="view-teacher">
       <div class="section-title">👩‍🏫 Teacher Dashboard</div>
@@ -397,6 +413,7 @@
     <button data-view="rewards"><span class="ic">🎁</span><span class="tx">Rewards</span></button>
     <button data-view="board"><span class="ic">🏆</span><span class="tx">Ranks</span></button>
     <button data-view="badges"><span class="ic">🏅</span><span class="tx">Badges</span></button>
+    <button data-view="sdg"><span class="ic">🌐</span><span class="tx">Goals</span></button>
     <button data-view="teacher"><span class="ic">👩‍🏫</span><span class="tx">Teacher</span></button>
   </div>
 
@@ -521,6 +538,49 @@
     { id: 'weekly',    emoji: '🗓️', name: 'Challenge Champ',desc: 'Finish a weekly challenge', test: m => !!m.weeklyDone },
     { id: 'collector', emoji: '🎁', name: 'Collector',      desc: 'Claim 4 rewards',           test: m => Object.keys(m.claimed || {}).length >= 4 },
   ];
+
+  // The 17 UN Sustainable Development Goals — official short titles + colours.
+  const SDGS = [
+    { n: 1,  name: 'No Poverty',                          color: '#E5243B' },
+    { n: 2,  name: 'Zero Hunger',                         color: '#DDA63A' },
+    { n: 3,  name: 'Good Health & Well-being',            color: '#4C9F38' },
+    { n: 4,  name: 'Quality Education',                   color: '#C5192D' },
+    { n: 5,  name: 'Gender Equality',                     color: '#FF3A21' },
+    { n: 6,  name: 'Clean Water & Sanitation',            color: '#26BDE2' },
+    { n: 7,  name: 'Affordable & Clean Energy',           color: '#FCC30B' },
+    { n: 8,  name: 'Decent Work & Economic Growth',       color: '#A21942' },
+    { n: 9,  name: 'Industry, Innovation & Infrastructure', color: '#FD6925' },
+    { n: 10, name: 'Reduced Inequalities',                color: '#DD1367' },
+    { n: 11, name: 'Sustainable Cities & Communities',    color: '#FD9D24' },
+    { n: 12, name: 'Responsible Consumption & Production', color: '#BF8B2E' },
+    { n: 13, name: 'Climate Action',                      color: '#3F7E44' },
+    { n: 14, name: 'Life Below Water',                    color: '#0A97D9' },
+    { n: 15, name: 'Life on Land',                        color: '#56C02B' },
+    { n: 16, name: 'Peace, Justice & Strong Institutions', color: '#00689D' },
+    { n: 17, name: 'Partnerships for the Goals',          color: '#19486A' },
+  ];
+  function sdg(n) { return SDGS[n - 1]; }
+
+  // Standard mapping of each habit to the SDG it most supports.
+  const SDG_MAP = {
+    bottle: 12, meatless: 13, lights: 7, water: 6, recyclepaper: 12,
+    walk: 13, sortbins: 12, classlights: 7, litter: 11, bothsides: 12,
+    sharebooks: 4, cleanclass: 11, transit: 11, bag: 12, planttree: 15,
+    cleanup: 15, teachfamily: 7,
+  };
+
+  // A real Sharjah / Kalba fact for each SDG our habits touch, so every
+  // completed habit links the global goal to something close to home.
+  const LOCAL_FACTS = {
+    4:  'Sharjah was named UNESCO World Book Capital 2019 — sharing books helps everyone learn! 📚',
+    6:  'Most of Sharjah’s tap water comes from the sea by desalination, which uses lots of energy — every drop you save counts! 💧',
+    7:  'Sharjah’s waste-to-energy plant turns rubbish into clean electricity for thousands of homes! ⚡',
+    11: 'Kalba is growing as an eco-tourism town, protecting its beaches, mountains and wildlife for everyone. 🏞️',
+    12: 'Sharjah aims to be a zero-waste city — its Bee’ah centre is one of the biggest recyclers in the Middle East! ♻️',
+    13: 'The UAE hosted COP28 and aims for net-zero by 2050 — small choices like this cut carbon! 🌍',
+    15: 'Kalba’s Khor Kalba mangroves are a protected reserve, home to the rare Arabian collared kingfisher! 🌳',
+    default: 'Every eco-action helps Sharjah and Kalba reach the Global Goals! 🌱',
+  };
 
   /* ---------- Date helpers ---------- */
   function todayKey() {
@@ -701,12 +761,15 @@
       HABITS.filter(h => h.cat === cat.key).forEach(h => {
         const done = !!me.checked[h.id];
         const isMission = h.id === mh.id;
+        const g = sdg(SDG_MAP[h.id]);
         const card = document.createElement('div');
         card.className = 'habit' + (done ? ' done' : '');
         card.innerHTML =
           '<div class="emoji">' + h.emoji + '</div>' +
           '<div class="info"><div class="name">' + h.name + '</div>' +
-          '<div class="pts">+' + h.pts + ' points' + (isMission ? ' <span class="star">· 🎯 Mission +' + MISSION_BONUS + '</span>' : '') + '</div></div>' +
+          '<div class="pts">+' + h.pts + ' points' + (isMission ? ' <span class="star">· 🎯 Mission +' + MISSION_BONUS + '</span>' : '') + '</div>' +
+          '<div class="sdg-badge" style="background:' + g.color + '">SDG ' + g.n + ' · ' + g.name + '</div>' +
+          '</div>' +
           '<div class="check">✓</div>';
         card.addEventListener('click', () => toggle(h));
         listEl.appendChild(card);
@@ -799,6 +862,21 @@
         '<div class="b-emoji">' + (earned ? b.emoji : '🔒') + '</div>' +
         '<div class="b-name">' + b.name + '</div>' +
         '<div class="b-desc">' + b.desc + '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  function renderSDG() {
+    const grid = document.getElementById('sdgGrid');
+    grid.innerHTML = '';
+    const active = new Set(Object.values(SDG_MAP));   // goals our habits support
+    SDGS.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'sdg-card';
+      card.style.background = g.color;
+      card.innerHTML =
+        '<div class="gn">' + g.n + '</div>' +
+        '<div class="gt">' + g.name + (active.has(g.n) ? ' <span class="gactive">★</span>' : '') + '</div>';
       grid.appendChild(card);
     });
   }
@@ -975,22 +1053,26 @@
 
   function celebrate(h, isMission) {
     const allDone = HABITS.every(x => me.checked[x.id]);
-    let msg = '+' + h.pts + ' points! Nice one 🌿';
-    if (isMission) msg = '🎯 Mission done! +' + (h.pts + MISSION_BONUS) + ' points!';
-    if (allDone) msg = '🎉 All habits done today! You legend!';
-    showToast(msg);
+    const g = sdg(SDG_MAP[h.id]);
+    const fact = LOCAL_FACTS[g.n] || LOCAL_FACTS.default;
+    const gained = h.pts + (isMission ? MISSION_BONUS : 0);
+    let head = '+' + gained + ' pts';
+    if (isMission) head = '🎯 Mission! +' + gained + ' pts';
+    if (allDone) head = '🎉 All done! +' + gained + ' pts';
+    // One combined message: points + SDG goal + a Sharjah/Kalba fact.
+    showToast(head + ' · SDG ' + g.n + ' ' + g.name + ' — ' + fact, 4800);
     sfx.ding();
     burstConfetti(allDone ? 60 : 22);
   }
 
   /* ============ Toast + confetti ============ */
   let toastTimer = null;
-  function showToast(msg) {
+  function showToast(msg, dur) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+    toastTimer = setTimeout(() => t.classList.remove('show'), dur || 2000);
   }
   function burstConfetti(count) {
     const colors = ['#22c55e','#38bdf8','#f59e0b','#16a34a','#a3e635','#34d399','#a855f7'];
@@ -1200,6 +1282,7 @@
   /* ============ Boot ============ */
   cloudInit();
   buildPickers();
+  renderSDG();
   refreshMute();
   if (currentId && students[currentId]) {
     me = ensureStudent(students[currentId]);
