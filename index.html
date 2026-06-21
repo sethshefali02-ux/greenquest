@@ -131,6 +131,9 @@
   .habit.done .check { background: var(--leaf); border-color: var(--leaf); color: white; }
   .habit.done .emoji { background: #dcfce7; }
   .sdg-badge { display: inline-block; margin-top: 6px; font-size: 0.64rem; font-weight: 800; color: #fff; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.2px; }
+  .say { border: none; background: var(--bg2); color: var(--green-dark); width: 32px; height: 32px; min-width: 32px; border-radius: 50%; font-size: 0.95rem; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; transition: transform .12s ease; }
+  .say:active { transform: scale(0.9); }
+  .reward .say { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; min-width: 26px; font-size: 0.78rem; background: rgba(255,255,255,0.85); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
   /* ---------- SDG goals page ---------- */
   .sdg-intro { color: var(--muted); font-size: 0.85rem; margin: 0 4px 12px; line-height: 1.45; }
@@ -219,8 +222,10 @@
   footer { text-align: center; margin-top: 22px; color: var(--muted); font-size: 0.78rem; }
 
   /* ---------- Celebration toast ---------- */
-  #toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(160px); background: var(--green-dark); color: white; padding: 14px 20px; border-radius: 18px; font-weight: 700; font-size: 0.92rem; line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(.22,1,.36,1); z-index: 50; max-width: 92%; width: max-content; text-align: center; }
+  #toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(160px); background: var(--green-dark); color: white; padding: 12px 16px; border-radius: 18px; font-weight: 700; font-size: 0.92rem; line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(.22,1,.36,1); z-index: 50; max-width: 92%; width: max-content; display: flex; align-items: center; gap: 10px; text-align: left; }
   #toast.show { transform: translateX(-50%) translateY(0); }
+  .toast-say { border: none; background: rgba(255,255,255,0.22); color: #fff; width: 30px; height: 30px; min-width: 30px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; display: grid; place-items: center; }
+  .toast-say:active { transform: scale(0.9); }
 
   /* ---------- Welcome screen ---------- */
   #welcome { position: fixed; inset: 0; z-index: 100; background: linear-gradient(160deg, var(--bg1), var(--bg2)); display: grid; place-items: center; padding: 20px; overflow-y: auto; }
@@ -295,7 +300,7 @@
     <div class="topbar">
       <div class="brand"><span class="seed">🌱</span> Green Champions of ESK</div>
       <div class="tools">
-        <button class="icon-btn" id="muteBtn" title="Sound on/off">🔊</button>
+        <button class="icon-btn" id="muteBtn" title="Read my progress aloud">🔊</button>
         <button class="icon-btn" id="switchBtn" title="Switch student">👤</button>
       </div>
     </div>
@@ -417,7 +422,7 @@
     <button data-view="teacher"><span class="ic">👩‍🏫</span><span class="tx">Teacher</span></button>
   </div>
 
-  <div id="toast"></div>
+  <div id="toast"><span id="toastText"></span><button class="toast-say" id="toastSay" aria-label="Read aloud" title="Read aloud">🔊</button></div>
 
 <script>
 /* =========================================================
@@ -616,7 +621,7 @@
   let currentId = localStorage.getItem(CUR_KEY) || null;
   let me = null;            // the active student record
   let boardTab = 'students';
-  let muted = localStorage.getItem(MUTE_KEY) === '1';
+  let muted = false;            // sound effects on; read-aloud is always available
 
   function slug(s) { return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'); }
 
@@ -662,6 +667,48 @@
     level:  () => { [523,659,784,1047].forEach((f,i)=>tone(f, i*0.09, 0.18, 'triangle', 0.18)); },
     badge:  () => { [784,988,1175].forEach((f,i)=>tone(f, i*0.08, 0.2, 'sine', 0.18)); },
   };
+
+  /* ---------- Text-to-speech (read aloud) ----------
+     Uses the browser's built-in voices, preferring a child-friendly
+     female English voice, at normal speaking speed. */
+  let ttsVoice = null;
+  function pickVoice() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = speechSynthesis.getVoices();
+    if (!voices.length) return;
+    const prefs = ['google uk english female','microsoft zira','zira','samantha',
+      'microsoft hazel','hazel','google us english','karen','susan','tessa','fiona','female'];
+    for (const p of prefs) {
+      const v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en') && v.name.toLowerCase().includes(p));
+      if (v) { ttsVoice = v; return; }
+    }
+    ttsVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) || voices[0];
+  }
+  function speak(text) {
+    if (!('speechSynthesis' in window) || !text) return;
+    try {
+      speechSynthesis.cancel();                 // stop anything already talking
+      const u = new SpeechSynthesisUtterance(text);
+      if (ttsVoice) u.voice = ttsVoice;
+      u.lang = (ttsVoice && ttsVoice.lang) || 'en-GB';
+      u.rate = 1;        // normal speed
+      u.pitch = 1.15;    // a touch higher = friendlier for children
+      u.volume = 1;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  // Remove emoji/symbols so the voice reads clean words only.
+  function speakClean(text) {
+    speak(String(text).replace(/[\p{Extended_Pictographic}️‍]/gu, '').replace(/\s{2,}/g, ' ').trim());
+  }
+  function speakStats() {
+    if (!me) return;
+    const li = levelInfo();
+    let today = 0; HABITS.forEach(h => { if (me.checked[h.id]) today += h.pts; });
+    speakClean('Hi ' + me.name + '. You have ' + me.total + ' points and a ' + me.streak +
+      ' day streak. Today you earned ' + today + ' points. Your level is ' + li.current.name + '. Keep growing, champion!');
+  }
+  if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
   /* ---------- Levels ---------- */
   function levelInfo() {
@@ -770,8 +817,14 @@
           '<div class="pts">+' + h.pts + ' points' + (isMission ? ' <span class="star">· 🎯 Mission +' + MISSION_BONUS + '</span>' : '') + '</div>' +
           '<div class="sdg-badge" style="background:' + g.color + '">SDG ' + g.n + ' · ' + g.name + '</div>' +
           '</div>' +
+          '<button class="say" aria-label="Read aloud" title="Read aloud">🔊</button>' +
           '<div class="check">✓</div>';
         card.addEventListener('click', () => toggle(h));
+        const fact = LOCAL_FACTS[g.n] || LOCAL_FACTS.default;
+        card.querySelector('.say').addEventListener('click', e => {
+          e.stopPropagation();   // don't toggle the habit when tapping the speaker
+          speakClean(h.name + '. SDG ' + g.n + ', ' + g.name + '. ' + fact);
+        });
         listEl.appendChild(card);
       });
     });
@@ -788,6 +841,7 @@
       const card = document.createElement('div');
       card.className = 'reward ' + cls;
       card.innerHTML =
+        '<button class="say" aria-label="Read aloud" title="Read aloud">🔊</button>' +
         '<div class="r-tag">' + tag + '</div>' +
         '<div class="r-emoji">' + r.emoji + '</div>' +
         '<div class="r-name">' + r.name + '</div>' +
@@ -795,6 +849,10 @@
         (claimed ? '<button class="cert-btn">⬇️ Certificate</button>' : '');
       if (unlocked && !claimed) card.addEventListener('click', () => claimReward(r));
       if (claimed) card.querySelector('.cert-btn').addEventListener('click', () => downloadCertificate(r));
+      card.querySelector('.say').addEventListener('click', e => {
+        e.stopPropagation();   // don't claim when tapping the speaker
+        speakClean(r.name + '. ' + r.cost + ' points.');
+      });
       storeEl.appendChild(card);
     });
   }
@@ -1067,9 +1125,11 @@
 
   /* ============ Toast + confetti ============ */
   let toastTimer = null;
+  let lastToast = '';
   function showToast(msg, dur) {
+    lastToast = msg;
+    document.getElementById('toastText').textContent = msg;
     const t = document.getElementById('toast');
-    t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), dur || 2000);
@@ -1183,13 +1243,11 @@
   document.getElementById('passInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('passBtn').click(); });
 
   /* ============ Top bar buttons ============ */
-  function refreshMute() { document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊'; }
-  document.getElementById('muteBtn').addEventListener('click', () => {
-    muted = !muted;
-    localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
-    refreshMute();
-    if (!muted) sfx.ding();
-  });
+  function refreshMute() { document.getElementById('muteBtn').textContent = '🔊'; }
+  // Top speaker: read the student's progress aloud.
+  document.getElementById('muteBtn').addEventListener('click', () => { sfx.click(); speakStats(); });
+  // Toast speaker: read the latest popup message aloud.
+  document.getElementById('toastSay').addEventListener('click', () => speakClean(lastToast));
   document.getElementById('switchBtn').addEventListener('click', () => {
     if (confirm('Switch student? You can sign back in any time.')) {
       currentId = null; localStorage.removeItem(CUR_KEY);
