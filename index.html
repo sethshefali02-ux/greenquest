@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="theme-color" content="#16a34a" />
-<title>Green Champions of ESK 🌱 — Eco Habit Tracker</title>
+<title>Green Champions of ESK 🌱 — Eco Habit Tracker | أبطال البيئة</title>
 
 <!-- =========================================================
   FIREBASE-READY LAYER (currently OFF — using localStorage).
@@ -13,8 +13,6 @@
     2. Un-comment the two <script> tags below.
     3. Paste your keys into CLOUD.config in the JS.
     4. Set CLOUD.enabled = true.
-  Everything else (leaderboards, teacher dashboard) already
-  reads/writes through the Store layer, so it will sync once on.
 ========================================================= -->
 <!--
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -46,26 +44,32 @@
     color: var(--text);
     background: linear-gradient(160deg, var(--bg1), var(--bg2));
     min-height: 100vh;
-    padding: 14px 14px 96px;            /* bottom space for the nav bar */
+    padding: 14px 14px 104px;
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 540px; margin: 0 auto; }
 
+  /* ---------- Bilingual text helpers ---------- */
+  .bi-en { display: block; }
+  .bi-ar { display: block; direction: rtl; font-size: 0.85em; opacity: 0.72; font-family: "Segoe UI", Tahoma, "Noto Naskh Arabic", sans-serif; }
+
   /* ---------- Top bar ---------- */
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .topbar .brand { font-weight: 800; font-size: 1.05rem; color: var(--green-dark); display: flex; align-items: center; gap: 7px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
+  .topbar .brand { font-weight: 800; font-size: 0.98rem; color: var(--green-dark); display: flex; align-items: center; gap: 7px; min-width: 0; }
   .topbar .brand .seed { display: inline-block; animation: sway 3s ease-in-out infinite; }
   @keyframes sway { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
   .icon-btn {
-    border: none; background: var(--card); color: var(--text); width: 42px; height: 42px;
+    border: none; background: var(--card); color: var(--text); height: 42px; min-width: 42px;
     border-radius: 14px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 12px rgba(20,83,45,0.08);
-    display: grid; place-items: center; transition: transform 0.12s ease;
+    display: grid; place-items: center; transition: transform 0.12s ease; flex-shrink: 0;
   }
   .icon-btn:active { transform: scale(0.92); }
+  .lang-btn { width: auto; padding: 0 10px; display: flex; align-items: center; gap: 4px; font-size: 1.05rem; }
+  .lang-btn span { font-size: 0.72rem; font-weight: 800; color: var(--green-dark); }
   .topbar .tools { display: flex; gap: 8px; }
 
   /* ---------- Section + cards ---------- */
-  .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 18px 4px 10px; }
+  .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin: 18px 4px 10px; }
   .card { background: var(--card); border-radius: 22px; box-shadow: 0 6px 18px rgba(20,83,45,0.08); }
 
   /* ---------- Views ---------- */
@@ -78,13 +82,14 @@
   .hero .av { font-size: 2.8rem; width: 70px; height: 70px; display: grid; place-items: center; background: var(--bg2); border-radius: 18px; flex-shrink: 0; }
   .hero .who { flex: 1; min-width: 0; }
   .hero .who .nm { font-weight: 800; font-size: 1.25rem; line-height: 1.1; }
-  .hero .who .sub { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
-  .hero .lvlchip { display: inline-block; margin-top: 8px; font-size: 0.8rem; font-weight: 800; color: var(--green-dark); background: var(--bg2); padding: 4px 10px; border-radius: 999px; }
+  .hero .who .sub { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+  .hero .lvlchip { display: inline-block; margin-top: 8px; font-size: 0.78rem; font-weight: 800; color: var(--green-dark); background: var(--bg2); padding: 4px 10px; border-radius: 999px; }
 
   .stats { display: flex; gap: 10px; margin-top: 14px; }
-  .stat { flex: 1; background: var(--card); border-radius: 18px; padding: 14px 8px; text-align: center; box-shadow: 0 6px 18px rgba(20,83,45,0.08); }
+  .stat { flex: 1; background: var(--card); border-radius: 18px; padding: 14px 6px; text-align: center; box-shadow: 0 6px 18px rgba(20,83,45,0.08); }
   .stat .num { font-size: 1.6rem; font-weight: 800; line-height: 1; }
-  .stat .label { font-size: 0.68rem; color: var(--muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .label { font-size: 0.62rem; color: var(--muted); margin-top: 6px; letter-spacing: 0.3px; line-height: 1.3; }
+  .stat .label .bi-ar { font-size: 0.95em; opacity: 0.8; }
   .stat.score .num { color: var(--green); }
   .stat.streak .num { color: var(--amber); }
   .stat.today .num { color: var(--sky); }
@@ -92,85 +97,87 @@
 
   /* ---------- Level + progress bar ---------- */
   .level-card { padding: 16px 18px; margin-top: 14px; }
-  .level-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-  .level-name { font-weight: 800; font-size: 1.05rem; }
-  .level-next { font-size: 0.78rem; color: var(--muted); }
+  .level-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+  .level-name { font-weight: 800; font-size: 1rem; }
+  .level-next { font-size: 0.74rem; color: var(--muted); text-align: right; }
   .bar { background: #e2e8f0; border-radius: 999px; height: 16px; overflow: hidden; }
   .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--leaf), var(--sky)); border-radius: 999px; transition: width 0.6s cubic-bezier(.22,1,.36,1); }
 
   /* ---------- Mission / Challenge ---------- */
   .mission { padding: 16px 18px; margin-top: 14px; border: 2px solid #fde68a; background: linear-gradient(120deg,#fffbeb,#fff); }
-  .mission .ttl { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 1px; color: #b45309; font-weight: 800; }
+  .mission .ttl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: #b45309; font-weight: 800; }
   .mission .body { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
   .mission .me { font-size: 2.2rem; }
-  .mission .txt { flex: 1; }
+  .mission .txt { flex: 1; min-width: 0; }
   .mission .txt .h { font-weight: 800; }
-  .mission .txt .p { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
-  .mission .done-pill { font-weight: 800; font-size: 0.8rem; padding: 5px 12px; border-radius: 999px; background: #e2e8f0; color: var(--muted); }
+  .mission .txt .p { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .mission .done-pill { font-weight: 800; font-size: 0.74rem; padding: 5px 10px; border-radius: 999px; background: #e2e8f0; color: var(--muted); text-align: center; flex-shrink: 0; }
   .mission.done { border-color: var(--leaf); }
   .mission.done .done-pill { background: var(--leaf); color: #fff; }
 
   .challenge { padding: 16px 18px; margin-top: 12px; border: 2px solid #bae6fd; background: linear-gradient(120deg,#f0f9ff,#fff); }
-  .challenge .ttl { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 1px; color: #0369a1; font-weight: 800; }
+  .challenge .ttl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: #0369a1; font-weight: 800; }
   .challenge .h { font-weight: 800; margin-top: 8px; }
-  .challenge .p { font-size: 0.82rem; color: var(--muted); margin: 4px 0 10px; }
+  .challenge .p { font-size: 0.8rem; color: var(--muted); margin: 4px 0 10px; }
 
   /* ---------- Habit list ---------- */
-  .cat-title { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: 800; color: var(--green-dark); margin: 22px 4px 12px; padding-bottom: 8px; border-bottom: 2px dashed #bbf7d0; }
+  .cat-title { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 800; color: var(--green-dark); margin: 22px 4px 12px; padding-bottom: 8px; border-bottom: 2px dashed #bbf7d0; }
   .cat-title .cat-emoji { font-size: 1.3rem; }
   #habitList > .cat-title:first-child { margin-top: 6px; }
-  .habit { display: flex; align-items: center; gap: 14px; background: var(--card); border-radius: 18px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(20,83,45,0.07); cursor: pointer; user-select: none; border: 2px solid transparent; transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease; }
+  .habit { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: 18px; padding: 14px 14px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(20,83,45,0.07); cursor: pointer; user-select: none; border: 2px solid transparent; transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease; }
   .habit:active { transform: scale(0.98); }
-  .habit .emoji { font-size: 2.4rem; width: 58px; height: 58px; display: grid; place-items: center; background: var(--bg2); border-radius: 14px; flex-shrink: 0; }
-  .habit .info { flex: 1; }
-  .habit .name { font-weight: 700; font-size: 0.98rem; }
-  .habit .pts { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-  .habit .star { font-size: 0.72rem; color: #b45309; font-weight: 800; }
+  .habit .emoji { font-size: 2.2rem; width: 54px; height: 54px; display: grid; place-items: center; background: var(--bg2); border-radius: 14px; flex-shrink: 0; }
+  .habit .info { flex: 1; min-width: 0; }
+  .habit .name { font-weight: 700; font-size: 0.96rem; }
+  .habit .pts { font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+  .habit .star { color: #b45309; font-weight: 800; }
   .habit .check { width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid #cbd5e1; display: grid; place-items: center; flex-shrink: 0; transition: all 0.2s ease; font-weight: 900; color: transparent; }
   .habit.done { border-color: var(--leaf); background: #f0fdf4; }
   .habit.done .check { background: var(--leaf); border-color: var(--leaf); color: white; }
   .habit.done .emoji { background: #dcfce7; }
-  .sdg-badge { display: inline-block; margin-top: 6px; font-size: 0.64rem; font-weight: 800; color: #fff; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.2px; }
+  .sdg-badge { display: inline-block; margin-top: 6px; font-size: 0.62rem; font-weight: 800; color: #fff; padding: 4px 8px; border-radius: 10px; letter-spacing: 0.2px; line-height: 1.35; }
+  .sdg-badge .bi-ar { font-size: 0.95em; opacity: 0.92; }
   .say { border: none; background: var(--bg2); color: var(--green-dark); width: 32px; height: 32px; min-width: 32px; border-radius: 50%; font-size: 0.95rem; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; transition: transform .12s ease; }
   .say:active { transform: scale(0.9); }
   .reward .say { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; min-width: 26px; font-size: 0.78rem; background: rgba(255,255,255,0.85); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
   /* ---------- SDG goals page ---------- */
-  .sdg-intro { color: var(--muted); font-size: 0.85rem; margin: 0 4px 12px; line-height: 1.45; }
+  .sdg-intro { color: var(--muted); font-size: 0.82rem; margin: 0 4px 12px; line-height: 1.45; }
   .sdg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .sdg-card { border-radius: 16px; padding: 12px; color: #fff; box-shadow: 0 4px 14px rgba(20,83,45,0.12); display: flex; align-items: center; gap: 10px; min-height: 66px; }
-  .sdg-card .gn { font-size: 1.7rem; font-weight: 900; line-height: 1; flex-shrink: 0; width: 34px; text-align: center; }
-  .sdg-card .gt { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
-  .sdg-card .gactive { opacity: 0.95; }
+  .sdg-card { border-radius: 16px; padding: 12px; color: #fff; box-shadow: 0 4px 14px rgba(20,83,45,0.12); display: flex; align-items: center; gap: 10px; min-height: 72px; }
+  .sdg-card .gn { font-size: 1.7rem; font-weight: 900; line-height: 1; flex-shrink: 0; width: 32px; text-align: center; }
+  .sdg-card .gt { font-size: 0.76rem; font-weight: 700; line-height: 1.25; }
+  .sdg-card .gt .bi-ar { opacity: 0.95; }
 
   /* ---------- Buttons ---------- */
   .actions { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
-  button.action { border: none; border-radius: 16px; padding: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform 0.12s ease, opacity 0.2s ease; }
+  button.action { border: none; border-radius: 16px; padding: 13px; font-size: 0.92rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: transform 0.12s ease, opacity 0.2s ease; line-height: 1.3; }
   button.action:active { transform: scale(0.97); }
+  button.action .bi-ar { font-size: 0.88em; opacity: 0.85; }
   .btn-ghost { background: transparent; color: var(--muted); box-shadow: none; }
   .btn-ghost:active { opacity: 0.6; }
   .btn-primary { background: linear-gradient(90deg, var(--green), var(--leaf)); color: #fff; box-shadow: 0 8px 22px rgba(22,163,74,0.3); }
 
   /* ---------- Rewards store ---------- */
   .store { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .reward { background: var(--card); border-radius: 18px; padding: 16px 12px 14px; text-align: center; box-shadow: 0 4px 14px rgba(20,83,45,0.07); border: 2px solid transparent; position: relative; transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease; }
-  .reward .r-emoji { font-size: 2.3rem; line-height: 1; }
-  .reward .r-name { font-weight: 700; font-size: 0.9rem; margin-top: 8px; }
-  .reward .r-cost { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+  .reward { background: var(--card); border-radius: 18px; padding: 30px 12px 14px; text-align: center; box-shadow: 0 4px 14px rgba(20,83,45,0.07); border: 2px solid transparent; position: relative; transition: transform 0.12s ease, border-color 0.2s ease, background 0.2s ease; }
+  .reward .r-emoji { font-size: 2.2rem; line-height: 1; }
+  .reward .r-name { font-weight: 700; font-size: 0.86rem; margin-top: 8px; line-height: 1.3; }
+  .reward .r-cost { font-size: 0.74rem; color: var(--muted); margin-top: 5px; }
   .reward.locked { opacity: 0.55; filter: grayscale(0.55); }
   .reward.unlocked { cursor: pointer; }
   .reward.unlocked:active { transform: scale(0.97); }
   .reward.claimed { border-color: var(--leaf); background: #f0fdf4; }
-  .reward .r-tag { position: absolute; top: 8px; right: 8px; font-size: 0.66rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.3px; }
+  .reward .r-tag { position: absolute; top: 8px; right: 8px; font-size: 0.6rem; font-weight: 800; padding: 3px 7px; border-radius: 999px; letter-spacing: 0.2px; line-height: 1.3; }
   .reward.locked .r-tag { background: #e2e8f0; color: var(--muted); }
   .reward.unlocked .r-tag { background: var(--amber); color: white; }
   .reward.claimed .r-tag { background: var(--leaf); color: white; }
-  .cert-btn { margin-top: 10px; border: none; background: var(--green); color: #fff; font-family: inherit; font-weight: 700; font-size: 0.78rem; padding: 7px 10px; border-radius: 10px; cursor: pointer; width: 100%; transition: transform .12s ease; }
+  .cert-btn { margin-top: 10px; border: none; background: var(--green); color: #fff; font-family: inherit; font-weight: 700; font-size: 0.74rem; padding: 7px 8px; border-radius: 10px; cursor: pointer; width: 100%; line-height: 1.3; transition: transform .12s ease; }
   .cert-btn:active { transform: scale(0.96); }
 
   /* ---------- Leaderboard ---------- */
   .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-  .tab { flex: 1; border: none; background: var(--card); color: var(--muted); font-weight: 800; font-family: inherit; padding: 11px; border-radius: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(20,83,45,0.07); transition: all .2s ease; font-size: 0.9rem; }
+  .tab { flex: 1; border: none; background: var(--card); color: var(--muted); font-weight: 800; font-family: inherit; padding: 10px; border-radius: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(20,83,45,0.07); transition: all .2s ease; font-size: 0.84rem; line-height: 1.3; }
   .tab.active { background: var(--green); color: #fff; }
   .board { background: var(--card); border-radius: 22px; padding: 8px 6px; box-shadow: 0 6px 18px rgba(20,83,45,0.08); overflow: hidden; }
   .row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; transition: background 0.2s ease; }
@@ -178,7 +185,7 @@
   .row .rank { width: 28px; text-align: center; font-weight: 800; font-size: 1rem; color: var(--muted); flex-shrink: 0; }
   .row .avatar { font-size: 1.6rem; width: 42px; height: 42px; display: grid; place-items: center; background: var(--bg2); border-radius: 12px; flex-shrink: 0; }
   .row .who { flex: 1; font-weight: 700; min-width: 0; }
-  .row .who .lvl { font-size: 0.74rem; color: var(--muted); font-weight: 600; margin-top: 2px; }
+  .row .who .lvl { font-size: 0.72rem; color: var(--muted); font-weight: 600; margin-top: 2px; }
   .row .score { font-weight: 800; color: var(--green); }
   .row.me { background: #f0fdf4; border: 2px solid var(--leaf); }
   .row.top1 .rank { color: #f59e0b; }
@@ -189,64 +196,68 @@
   .badge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .badge { background: var(--card); border-radius: 18px; padding: 16px 12px; text-align: center; box-shadow: 0 4px 14px rgba(20,83,45,0.07); border: 2px solid transparent; }
   .badge .b-emoji { font-size: 2.2rem; }
-  .badge .b-name { font-weight: 800; font-size: 0.9rem; margin-top: 6px; }
-  .badge .b-desc { font-size: 0.74rem; color: var(--muted); margin-top: 4px; }
+  .badge .b-name { font-weight: 800; font-size: 0.86rem; margin-top: 6px; line-height: 1.3; }
+  .badge .b-desc { font-size: 0.7rem; color: var(--muted); margin-top: 4px; line-height: 1.35; }
   .badge.locked { opacity: 0.45; filter: grayscale(0.8); }
   .badge.earned { border-color: var(--leaf); background: #f0fdf4; }
 
   /* ---------- Teacher dashboard ---------- */
   .lock { padding: 22px 18px; text-align: center; }
-  .lock h3 { font-size: 1.2rem; }
-  .lock p { color: var(--muted); font-size: 0.9rem; margin: 8px 0 16px; }
+  .lock h3 { font-size: 1.15rem; }
+  .lock p { color: var(--muted); font-size: 0.86rem; margin: 8px 0 16px; line-height: 1.4; }
   .lock input { width: 100%; font-family: inherit; font-size: 1.05rem; text-align: center; letter-spacing: 3px; padding: 14px; border-radius: 16px; border: 2.5px solid #d1fae5; background: var(--bg1); outline: none; }
   .lock input:focus { border-color: var(--leaf); }
   .tcards { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-  .tcard { flex: 1; min-width: 120px; background: var(--card); border-radius: 16px; padding: 14px; box-shadow: 0 4px 12px rgba(20,83,45,0.07); }
-  .tcard .n { font-size: 1.5rem; font-weight: 800; color: var(--green); }
-  .tcard .l { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-  .ttable { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,83,45,0.07); font-size: 0.85rem; }
-  .ttable th, .ttable td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #ecfdf5; }
-  .ttable th { background: var(--bg2); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.4px; color: var(--green-dark); }
+  .tcard { flex: 1; min-width: 110px; background: var(--card); border-radius: 16px; padding: 14px; box-shadow: 0 4px 12px rgba(20,83,45,0.07); }
+  .tcard .n { font-size: 1.4rem; font-weight: 800; color: var(--green); }
+  .tcard .l { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.3px; margin-top: 4px; line-height: 1.3; }
+  .ttable { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(20,83,45,0.07); font-size: 0.82rem; }
+  .ttable th, .ttable td { padding: 9px 7px; text-align: left; border-bottom: 1px solid #ecfdf5; }
+  .ttable th { background: var(--bg2); font-size: 0.66rem; letter-spacing: 0.2px; color: var(--green-dark); line-height: 1.25; }
   .ttable td.c, .ttable th.c { text-align: center; }
   .ttable tr:last-child td { border-bottom: none; }
-  .tiny-btn { border: none; background: #fee2e2; color: #dc2626; font-weight: 700; border-radius: 8px; padding: 4px 8px; font-size: 0.72rem; cursor: pointer; font-family: inherit; }
+  .tiny-btn { border: none; background: #fee2e2; color: #dc2626; font-weight: 700; border-radius: 8px; padding: 4px 7px; font-size: 0.68rem; cursor: pointer; font-family: inherit; line-height: 1.2; }
 
   /* ---------- Bottom nav ---------- */
   .nav { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); width: calc(100% - 20px); max-width: 540px; background: var(--card); border-radius: 22px; box-shadow: 0 8px 30px rgba(20,83,45,0.16); display: flex; padding: 6px; z-index: 30; }
-  .nav button { flex: 1; border: none; background: transparent; font-family: inherit; cursor: pointer; padding: 8px 2px; border-radius: 16px; color: var(--muted); display: grid; place-items: center; gap: 2px; transition: all .2s ease; }
-  .nav button .ic { font-size: 1.35rem; line-height: 1; }
-  .nav button .tx { font-size: 0.62rem; font-weight: 700; }
+  .nav button { flex: 1; border: none; background: transparent; font-family: inherit; cursor: pointer; padding: 7px 1px; border-radius: 14px; color: var(--muted); display: grid; place-items: center; gap: 1px; transition: all .2s ease; }
+  .nav button .ic { font-size: 1.25rem; line-height: 1; }
+  .nav button .tx { font-size: 0.56rem; font-weight: 800; }
+  .nav button .tx-ar { font-size: 0.5rem; font-weight: 700; opacity: 0.7; direction: rtl; }
   .nav button.active { background: var(--bg2); color: var(--green-dark); }
   .nav button:active { transform: scale(0.94); }
 
-  footer { text-align: center; margin-top: 22px; color: var(--muted); font-size: 0.78rem; }
+  footer { text-align: center; margin-top: 22px; color: var(--muted); font-size: 0.74rem; line-height: 1.5; }
 
   /* ---------- Celebration toast ---------- */
-  #toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(160px); background: var(--green-dark); color: white; padding: 12px 16px; border-radius: 18px; font-weight: 700; font-size: 0.92rem; line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(.22,1,.36,1); z-index: 50; max-width: 92%; width: max-content; display: flex; align-items: center; gap: 10px; text-align: left; }
+  #toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(180px); background: var(--green-dark); color: white; padding: 12px 16px; border-radius: 18px; font-weight: 700; font-size: 0.88rem; line-height: 1.4; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.4s cubic-bezier(.22,1,.36,1); z-index: 50; max-width: 92%; width: max-content; display: flex; align-items: center; gap: 10px; text-align: left; }
   #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast .bi-ar { opacity: 0.85; }
   .toast-say { border: none; background: rgba(255,255,255,0.22); color: #fff; width: 30px; height: 30px; min-width: 30px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; display: grid; place-items: center; }
   .toast-say:active { transform: scale(0.9); }
 
   /* ---------- Welcome screen ---------- */
   #welcome { position: fixed; inset: 0; z-index: 100; background: linear-gradient(160deg, var(--bg1), var(--bg2)); display: grid; place-items: center; padding: 20px; overflow-y: auto; }
   #welcome.hidden { display: none; }
-  .welcome-card { background: var(--card); border-radius: 28px; padding: 26px 22px 24px; box-shadow: 0 12px 40px rgba(20,83,45,0.16); max-width: 440px; width: 100%; text-align: center; }
-  .welcome-card .big-seed { font-size: 3rem; display: inline-block; animation: sway 3s ease-in-out infinite; }
-  .welcome-card h2 { font-size: 1.45rem; margin-top: 4px; letter-spacing: -0.5px; }
-  .welcome-card .hi { color: var(--muted); margin-top: 6px; font-size: 0.94rem; }
+  .welcome-card { background: var(--card); border-radius: 28px; padding: 24px 22px 24px; box-shadow: 0 12px 40px rgba(20,83,45,0.16); max-width: 440px; width: 100%; text-align: center; }
+  .welcome-card .big-seed { font-size: 2.8rem; display: inline-block; animation: sway 3s ease-in-out infinite; }
+  .welcome-card h2 { font-size: 1.35rem; margin-top: 4px; letter-spacing: -0.5px; }
+  .welcome-card .h2ar { font-size: 1.05rem; color: var(--green-dark); direction: rtl; margin-top: 2px; }
+  .welcome-card .hi { color: var(--muted); margin-top: 8px; font-size: 0.9rem; line-height: 1.5; }
   .field { text-align: left; margin-top: 16px; }
-  .field label { display: block; font-weight: 700; font-size: 0.9rem; margin: 0 4px 8px; }
+  .field label { display: block; font-weight: 700; font-size: 0.88rem; margin: 0 4px 8px; line-height: 1.35; }
+  .field label .bi-ar { font-size: 0.92em; opacity: 0.78; }
   .field input, .field select { width: 100%; font-family: inherit; font-size: 1.05rem; color: var(--text); padding: 13px 15px; border-radius: 15px; border: 2.5px solid #d1fae5; background: var(--bg1); outline: none; transition: border-color 0.2s ease; -webkit-appearance: none; appearance: none; }
   .field input:focus, .field select:focus { border-color: var(--leaf); }
   .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 44px; }
   .picker { display: flex; flex-wrap: wrap; gap: 8px; }
-  .pick { border: 2.5px solid #d1fae5; background: var(--bg1); border-radius: 14px; padding: 8px 12px; font-family: inherit; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .15s ease; }
+  .pick { border: 2.5px solid #d1fae5; background: var(--bg1); border-radius: 14px; padding: 8px 12px; font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .15s ease; }
   .pick.sel { border-color: var(--leaf); background: #f0fdf4; }
   .av-picker { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
   .av-pick { border: 2.5px solid #d1fae5; background: var(--bg1); border-radius: 14px; font-size: 1.5rem; aspect-ratio: 1; cursor: pointer; display: grid; place-items: center; transition: all .15s ease; }
   .av-pick.sel { border-color: var(--leaf); background: #f0fdf4; transform: scale(1.06); }
-  .err { color: #dc2626; font-size: 0.85rem; font-weight: 600; margin: 12px 4px 0; min-height: 1.1em; }
-  .start-btn { width: 100%; margin-top: 14px; border: none; border-radius: 18px; padding: 16px; font-size: 1.15rem; font-weight: 800; font-family: inherit; color: white; cursor: pointer; background: linear-gradient(90deg, var(--green), var(--leaf)); box-shadow: 0 8px 22px rgba(22,163,74,0.35); transition: transform 0.12s ease; }
+  .err { color: #dc2626; font-size: 0.82rem; font-weight: 600; margin: 12px 4px 0; min-height: 1.1em; line-height: 1.35; }
+  .start-btn { width: 100%; margin-top: 14px; border: none; border-radius: 18px; padding: 15px; font-size: 1.1rem; font-weight: 800; font-family: inherit; color: white; cursor: pointer; background: linear-gradient(90deg, var(--green), var(--leaf)); box-shadow: 0 8px 22px rgba(22,163,74,0.35); transition: transform 0.12s ease; line-height: 1.3; }
   .start-btn:active { transform: scale(0.97); }
 
   /* ---------- Confetti ---------- */
@@ -260,38 +271,47 @@
     <div class="welcome-card">
       <span class="big-seed">🌱</span>
       <h2>Green Champions of ESK</h2>
-      <p class="hi">English School of Kalba · Let's grow good habits! 🌍</p>
+      <div class="h2ar">أبطال البيئة في مدرسة كلباء الإنجليزية</div>
+      <p class="hi">English School of Kalba · Let's grow good habits! 🌍<br/>مدرسة كلباء الإنجليزية · لننمِّ عادات جيدة!</p>
 
       <div class="field">
-        <label for="nameInput">What's your name?</label>
-        <input id="nameInput" type="text" placeholder="Type your name…" maxlength="20" autocomplete="off" />
+        <label><span class="bi-en">What's your name?</span><span class="bi-ar" dir="rtl">ما اسمك؟</span></label>
+        <input id="nameInput" type="text" placeholder="Type your name… · اكتب اسمك…" maxlength="20" autocomplete="off" />
       </div>
 
       <div class="field">
-        <label for="yearSelect">Which year are you in?</label>
+        <label><span class="bi-en">Which year are you in?</span><span class="bi-ar" dir="rtl">في أي صف أنت؟</span></label>
         <select id="yearSelect">
-          <option value="" disabled selected>Choose your year…</option>
-          <option value="1">Year 1</option>
-          <option value="2">Year 2</option>
-          <option value="3">Year 3</option>
-          <option value="4">Year 4</option>
-          <option value="5">Year 5</option>
-          <option value="6">Year 6</option>
+          <option value="" disabled selected>Choose your year… · اختر صفك…</option>
+          <option value="1">Year 1 · الصف 1</option>
+          <option value="2">Year 2 · الصف 2</option>
+          <option value="3">Year 3 · الصف 3</option>
+          <option value="4">Year 4 · الصف 4</option>
+          <option value="5">Year 5 · الصف 5</option>
+          <option value="6">Year 6 · الصف 6</option>
         </select>
       </div>
 
       <div class="field">
-        <label>Pick your house</label>
+        <label><span class="bi-en">Pick your house</span><span class="bi-ar" dir="rtl">اختر بيتك</span></label>
         <div class="picker" id="housePicker"></div>
       </div>
 
       <div class="field">
-        <label>Choose your avatar</label>
+        <label><span class="bi-en">Choose your avatar</span><span class="bi-ar" dir="rtl">اختر صورتك الرمزية</span></label>
         <div class="av-picker" id="avPicker"></div>
       </div>
 
+      <div class="field">
+        <label><span class="bi-en">Read-aloud language</span><span class="bi-ar" dir="rtl">لغة القراءة الصوتية</span></label>
+        <div class="picker" id="langPicker">
+          <button type="button" class="pick" data-lang="en"><span>🔤</span>English</button>
+          <button type="button" class="pick" data-lang="ar"><span>🇦🇪</span>العربية</button>
+        </div>
+      </div>
+
       <div class="err" id="welcomeErr"></div>
-      <button class="start-btn" id="startBtn">Start 🚀</button>
+      <button class="start-btn" id="startBtn">Start 🚀 · ابدأ</button>
     </div>
   </div>
 
@@ -300,8 +320,9 @@
     <div class="topbar">
       <div class="brand"><span class="seed">🌱</span> Green Champions of ESK</div>
       <div class="tools">
-        <button class="icon-btn" id="muteBtn" title="Read my progress aloud">🔊</button>
-        <button class="icon-btn" id="switchBtn" title="Switch student">👤</button>
+        <button class="icon-btn lang-btn" id="langBtn" title="Switch read-aloud language · تبديل لغة القراءة">🇦🇪<span id="langLbl">EN</span></button>
+        <button class="icon-btn" id="muteBtn" title="Read my progress aloud · اقرأ تقدمي">🔊</button>
+        <button class="icon-btn" id="switchBtn" title="Switch student · تبديل الطالب">👤</button>
       </div>
     </div>
 
@@ -311,16 +332,16 @@
         <div class="av" id="heroAv">🌟</div>
         <div class="who">
           <div class="nm" id="heroName">Champion</div>
-          <div class="sub" id="heroSub">Year — · House —</div>
+          <div class="sub" id="heroSub">—</div>
           <span class="lvlchip" id="heroLvl">🌰 Seed</span>
         </div>
       </div>
 
       <div class="stats">
-        <div class="stat score"><div class="num" id="totalScore">0</div><div class="label">Points</div></div>
-        <div class="stat streak"><div class="num" id="streak">0</div><div class="label">Streak 🔥</div></div>
-        <div class="stat today"><div class="num" id="todayPts">0</div><div class="label">Today</div></div>
-        <div class="stat badges"><div class="num" id="badgeCount">0</div><div class="label">Badges</div></div>
+        <div class="stat score"><div class="num" id="totalScore">0</div><div class="label"><span class="bi-en">Points</span><span class="bi-ar" dir="rtl">النقاط</span></div></div>
+        <div class="stat streak"><div class="num" id="streak">0</div><div class="label"><span class="bi-en">Streak 🔥</span><span class="bi-ar" dir="rtl">التتابع</span></div></div>
+        <div class="stat today"><div class="num" id="todayPts">0</div><div class="label"><span class="bi-en">Today</span><span class="bi-ar" dir="rtl">اليوم</span></div></div>
+        <div class="stat badges"><div class="num" id="badgeCount">0</div><div class="label"><span class="bi-en">Badges</span><span class="bi-ar" dir="rtl">الأوسمة</span></div></div>
       </div>
 
       <div class="card level-card">
@@ -333,12 +354,12 @@
 
       <!-- Daily mission -->
       <div class="card mission" id="missionCard">
-        <div class="ttl">🎯 Daily Mission</div>
+        <div class="ttl">🎯 Daily Mission · مهمة اليوم</div>
         <div class="body">
           <div class="me" id="missionEmoji">🌍</div>
           <div class="txt">
             <div class="h" id="missionName">—</div>
-            <div class="p" id="missionDesc">Complete it for bonus points!</div>
+            <div class="p" id="missionDesc">—</div>
           </div>
           <div class="done-pill" id="missionPill">+15</div>
         </div>
@@ -346,66 +367,66 @@
 
       <!-- Weekly challenge -->
       <div class="card challenge" id="challengeCard">
-        <div class="ttl">🗓️ Weekly Challenge</div>
+        <div class="ttl">🗓️ Weekly Challenge · تحدي الأسبوع</div>
         <div class="h" id="challengeName">—</div>
         <div class="p" id="challengeDesc">—</div>
         <div class="bar"><div class="bar-fill" id="challengeFill"></div></div>
       </div>
 
       <div class="actions">
-        <button class="action btn-primary" onclick="showView('habits')">➕ Log today's habits</button>
+        <button class="action btn-primary" onclick="showView('habits')">➕ Log today's habits<span class="bi-ar" dir="rtl">سجّل عادات اليوم</span></button>
       </div>
 
-      <footer>Progress saves on this device automatically.<br/>Come back tomorrow to grow your streak! 🌍</footer>
+      <footer>Progress saves on this device automatically. Come back tomorrow to grow your streak! 🌍<br/>يُحفظ تقدمك على هذا الجهاز تلقائياً. عُد غداً لتنمية سلسلتك!</footer>
     </div>
 
     <!-- ============ Habits ============ -->
     <div class="view" id="view-habits">
-      <div class="section-title">Today's Eco-Habits</div>
+      <div class="section-title">Today's Eco-Habits · عادات اليوم البيئية</div>
       <div id="habitList"></div>
       <div class="actions">
-        <button class="action btn-ghost" id="resetBtn">↺ Reset my progress</button>
+        <button class="action btn-ghost" id="resetBtn">↺ Reset my progress · إعادة ضبط تقدمي</button>
       </div>
     </div>
 
     <!-- ============ Rewards store ============ -->
     <div class="view" id="view-rewards">
-      <div class="section-title">🎁 Rewards Store</div>
+      <div class="section-title">🎁 Rewards Store · متجر الجوائز</div>
       <div class="store" id="store"></div>
     </div>
 
     <!-- ============ Leaderboards ============ -->
     <div class="view" id="view-board">
-      <div class="section-title">🏆 Leaderboards</div>
+      <div class="section-title">🏆 Leaderboards · لوحات المتصدرين</div>
       <div class="tabs">
-        <button class="tab active" id="tabStudents" onclick="setBoardTab('students')">Students</button>
-        <button class="tab" id="tabHouses" onclick="setBoardTab('houses')">Houses</button>
+        <button class="tab active" id="tabStudents" onclick="setBoardTab('students')">Students · الطلاب</button>
+        <button class="tab" id="tabHouses" onclick="setBoardTab('houses')">Houses · البيوت</button>
       </div>
       <div class="board" id="board"></div>
     </div>
 
     <!-- ============ Badges ============ -->
     <div class="view" id="view-badges">
-      <div class="section-title">🏅 My Badges</div>
+      <div class="section-title">🏅 My Badges · أوسمتي</div>
       <div class="badge-grid" id="badgeGrid"></div>
     </div>
 
     <!-- ============ SDG goals ============ -->
     <div class="view" id="view-sdg">
-      <div class="section-title">🌐 The 17 Global Goals</div>
-      <p class="sdg-intro">The UN Sustainable Development Goals — the world's shared plan for a fairer, greener planet by 2030. ★ marks the goals your eco-habits are already helping with!</p>
+      <div class="section-title">🌐 The 17 Global Goals · الأهداف العالمية الـ17</div>
+      <p class="sdg-intro">The UN Sustainable Development Goals — the world's plan for a fairer, greener planet by 2030. ★ marks the goals your eco-habits help with!<br/><span dir="rtl">أهداف الأمم المتحدة للتنمية المستدامة — خطة العالم لكوكب أكثر عدلاً وخضرة بحلول 2030. النجمة ★ تشير إلى الأهداف التي تساعدها عاداتك!</span></p>
       <div class="sdg-grid" id="sdgGrid"></div>
     </div>
 
     <!-- ============ Teacher dashboard ============ -->
     <div class="view" id="view-teacher">
-      <div class="section-title">👩‍🏫 Teacher Dashboard</div>
+      <div class="section-title">👩‍🏫 Teacher Dashboard · لوحة المعلم</div>
       <div class="card lock" id="teacherLock">
-        <h3>🔒 Staff only</h3>
-        <p>Enter the teacher passcode to view class progress.</p>
+        <h3>🔒 Staff only · للمعلمين فقط</h3>
+        <p>Enter the teacher passcode to view class progress.<br/>أدخل رمز المعلم لعرض تقدم الصف.</p>
         <input id="passInput" type="password" inputmode="numeric" placeholder="• • • •" maxlength="12" />
         <div class="err" id="passErr"></div>
-        <button class="start-btn" id="passBtn" style="margin-top:14px;">Unlock</button>
+        <button class="start-btn" id="passBtn" style="margin-top:14px;">Unlock · فتح</button>
       </div>
       <div id="teacherBody" style="display:none;"></div>
     </div>
@@ -413,42 +434,38 @@
 
   <!-- ============ Bottom navigation ============ -->
   <div class="nav" id="nav">
-    <button data-view="home" class="active"><span class="ic">🏠</span><span class="tx">Home</span></button>
-    <button data-view="habits"><span class="ic">✅</span><span class="tx">Habits</span></button>
-    <button data-view="rewards"><span class="ic">🎁</span><span class="tx">Rewards</span></button>
-    <button data-view="board"><span class="ic">🏆</span><span class="tx">Ranks</span></button>
-    <button data-view="badges"><span class="ic">🏅</span><span class="tx">Badges</span></button>
-    <button data-view="sdg"><span class="ic">🌐</span><span class="tx">Goals</span></button>
-    <button data-view="teacher"><span class="ic">👩‍🏫</span><span class="tx">Teacher</span></button>
+    <button data-view="home" class="active"><span class="ic">🏠</span><span class="tx">Home</span><span class="tx-ar">الرئيسية</span></button>
+    <button data-view="habits"><span class="ic">✅</span><span class="tx">Habits</span><span class="tx-ar">العادات</span></button>
+    <button data-view="rewards"><span class="ic">🎁</span><span class="tx">Rewards</span><span class="tx-ar">الجوائز</span></button>
+    <button data-view="board"><span class="ic">🏆</span><span class="tx">Ranks</span><span class="tx-ar">المتصدرون</span></button>
+    <button data-view="badges"><span class="ic">🏅</span><span class="tx">Badges</span><span class="tx-ar">الأوسمة</span></button>
+    <button data-view="sdg"><span class="ic">🌐</span><span class="tx">Goals</span><span class="tx-ar">الأهداف</span></button>
+    <button data-view="teacher"><span class="ic">👩‍🏫</span><span class="tx">Teacher</span><span class="tx-ar">المعلم</span></button>
   </div>
 
   <div id="toast"><span id="toastText"></span><button class="toast-say" id="toastSay" aria-label="Read aloud" title="Read aloud">🔊</button></div>
 
 <script>
 /* =========================================================
-   Green Champions of ESK — all logic lives here.
-   Data is stored in the browser's localStorage through a
-   small Store layer that is ready to be swapped for Firebase.
+   Green Champions of ESK — bilingual (English + Arabic).
+   Both languages show together on every screen. The flag
+   toggle + welcome choice control the READ-ALOUD language.
+   Data is stored in localStorage through a Firebase-ready layer.
    ========================================================= */
 
   /* ---------- Config you can tweak ---------- */
-  const TEACHER_PASSCODE = 'esk2026';     // change to your staff passcode
-  const MISSION_BONUS = 15;               // extra points for the daily mission
-  const WEEKLY_TARGET = 150;              // points needed for the weekly challenge
-  const WEEKLY_BONUS  = 50;               // reward for finishing the weekly challenge
+  const TEACHER_PASSCODE = 'esk2026';
+  const MISSION_BONUS = 15;
+  const WEEKLY_TARGET = 150;
+  const WEEKLY_BONUS  = 50;
 
-  /* ---------- Firebase-ready cloud layer (OFF for now) ----------
-     Flip CLOUD.enabled to true AFTER pasting your config and
-     un-commenting the Firebase <script> tags in <head>. */
+  /* ---------- Firebase-ready cloud layer (OFF for now) ---------- */
   const CLOUD = {
     enabled: false,
     config: {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "YOUR_API_KEY", authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT", storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID", appId: "YOUR_APP_ID"
     },
     db: null
   };
@@ -457,69 +474,69 @@
     firebase.initializeApp(CLOUD.config);
     CLOUD.db = firebase.firestore();
   }
-  // Called after every local save. When cloud is on, mirror the
-  // active student up to Firestore (id = document key).
   function cloudSync(student) {
     if (!CLOUD.enabled || !CLOUD.db || !student) return;
     CLOUD.db.collection('students').doc(student.id).set(student).catch(()=>{});
   }
 
-  /* ---------- Static data ---------- */
+  /* ---------- Bilingual helper ---------- */
+  function bi(en, ar) { return '<span class="bi-en">' + en + '</span><span class="bi-ar" dir="rtl">' + ar + '</span>'; }
+
+  /* ---------- Static data (with Arabic) ---------- */
   const CATEGORIES = [
-    { key: 'home',      emoji: '🏠', title: 'Home Actions' },
-    { key: 'school',    emoji: '🏫', title: 'School Actions' },
-    { key: 'community', emoji: '🌍', title: 'Community Actions' },
+    { key: 'home',      emoji: '🏠', title: 'Home Actions',      title_ar: 'أعمال المنزل' },
+    { key: 'school',    emoji: '🏫', title: 'School Actions',    title_ar: 'أعمال المدرسة' },
+    { key: 'community', emoji: '🌍', title: 'Community Actions', title_ar: 'أعمال المجتمع' },
   ];
 
   const HABITS = [
-    { id: 'bottle',      cat: 'home',      emoji: '🚰', name: 'Used a reusable bottle',      pts: 10 },
-    { id: 'meatless',    cat: 'home',      emoji: '🥗', name: 'Ate a meatless meal',         pts: 15 },
-    { id: 'lights',      cat: 'home',      emoji: '💡', name: 'Switched off unused lights',  pts: 10 },
-    { id: 'water',       cat: 'home',      emoji: '💧', name: 'Saved water while brushing',  pts: 5  },
-    { id: 'recyclepaper',cat: 'home',      emoji: '♻️', name: 'Recycled paper at home',      pts: 5  },
-    { id: 'walk',        cat: 'home',      emoji: '🚶', name: 'Walked instead of using car', pts: 10 },
-    { id: 'sortbins',    cat: 'home',      emoji: '🗑️', name: 'Helped sort recycling bins',  pts: 5  },
-    { id: 'classlights', cat: 'school',    emoji: '🔌', name: 'Switched off classroom lights', pts: 5 },
-    { id: 'litter',      cat: 'school',    emoji: '🚮', name: 'Picked up litter at school',  pts: 5  },
-    { id: 'bothsides',   cat: 'school',    emoji: '📄', name: 'Saved paper, used both sides', pts: 5  },
-    { id: 'sharebooks',  cat: 'school',    emoji: '📚', name: 'Shared books with classmates', pts: 5  },
-    { id: 'cleanclass',  cat: 'school',    emoji: '🧹', name: 'Helped clean classroom',      pts: 10 },
-    { id: 'transit',     cat: 'community', emoji: '🚌', name: 'Took public transport',       pts: 20 },
-    { id: 'bag',         cat: 'community', emoji: '🛍️', name: 'Used a reusable bag',          pts: 10 },
-    { id: 'planttree',   cat: 'community', emoji: '🌳', name: 'Planted a seed or tree',      pts: 20 },
-    { id: 'cleanup',     cat: 'community', emoji: '🤝', name: 'Joined a clean-up activity',  pts: 20 },
-    { id: 'teachfamily', cat: 'community', emoji: '👨‍👩‍👧‍👦', name: 'Taught family about saving energy', pts: 10 },
+    { id: 'bottle',      cat: 'home',      emoji: '🚰', name: 'Used a reusable bottle',      name_ar: 'استخدمت زجاجة قابلة لإعادة الاستخدام', pts: 10 },
+    { id: 'meatless',    cat: 'home',      emoji: '🥗', name: 'Ate a meatless meal',         name_ar: 'تناولت وجبة بدون لحوم',               pts: 15 },
+    { id: 'lights',      cat: 'home',      emoji: '💡', name: 'Switched off unused lights',  name_ar: 'أطفأت الأضواء غير المستخدمة',         pts: 10 },
+    { id: 'water',       cat: 'home',      emoji: '💧', name: 'Saved water while brushing',  name_ar: 'وفّرت الماء أثناء تنظيف الأسنان',     pts: 5  },
+    { id: 'recyclepaper',cat: 'home',      emoji: '♻️', name: 'Recycled paper at home',      name_ar: 'أعدت تدوير الورق في المنزل',          pts: 5  },
+    { id: 'walk',        cat: 'home',      emoji: '🚶', name: 'Walked instead of using car', name_ar: 'مشيت بدلاً من استخدام السيارة',       pts: 10 },
+    { id: 'sortbins',    cat: 'home',      emoji: '🗑️', name: 'Helped sort recycling bins',  name_ar: 'ساعدت في فرز حاويات إعادة التدوير',   pts: 5  },
+    { id: 'classlights', cat: 'school',    emoji: '🔌', name: 'Switched off classroom lights', name_ar: 'أطفأت أضواء الفصل',                 pts: 5 },
+    { id: 'litter',      cat: 'school',    emoji: '🚮', name: 'Picked up litter at school',  name_ar: 'التقطت النفايات في المدرسة',          pts: 5  },
+    { id: 'bothsides',   cat: 'school',    emoji: '📄', name: 'Saved paper, used both sides', name_ar: 'وفّرت الورق باستخدام الوجهين',        pts: 5  },
+    { id: 'sharebooks',  cat: 'school',    emoji: '📚', name: 'Shared books with classmates', name_ar: 'شاركت الكتب مع زملائي',              pts: 5  },
+    { id: 'cleanclass',  cat: 'school',    emoji: '🧹', name: 'Helped clean classroom',      name_ar: 'ساعدت في تنظيف الفصل',                pts: 10 },
+    { id: 'transit',     cat: 'community', emoji: '🚌', name: 'Took public transport',       name_ar: 'استخدمت وسائل النقل العام',           pts: 20 },
+    { id: 'bag',         cat: 'community', emoji: '🛍️', name: 'Used a reusable bag',          name_ar: 'استخدمت كيساً قابلاً لإعادة الاستخدام', pts: 10 },
+    { id: 'planttree',   cat: 'community', emoji: '🌳', name: 'Planted a seed or tree',      name_ar: 'زرعت بذرة أو شجرة',                   pts: 20 },
+    { id: 'cleanup',     cat: 'community', emoji: '🤝', name: 'Joined a clean-up activity',  name_ar: 'شاركت في حملة تنظيف',                 pts: 20 },
+    { id: 'teachfamily', cat: 'community', emoji: '👨‍👩‍👧‍👦', name: 'Taught family about saving energy', name_ar: 'علّمت عائلتي عن توفير الطاقة',  pts: 10 },
   ];
 
   const LEVELS = [
-    { min: 0,    name: '🌰 Seed' },
-    { min: 100,  name: '🌱 Sprout' },
-    { min: 300,  name: '🪴 Plant' },
-    { min: 600,  name: '🌳 Tree' },
-    { min: 1000, name: '🛡️ Guardian' },
+    { min: 0,    name: '🌰 Seed',     name_ar: 'بذرة' },
+    { min: 100,  name: '🌱 Sprout',   name_ar: 'برعم' },
+    { min: 300,  name: '🪴 Plant',    name_ar: 'نبتة' },
+    { min: 600,  name: '🌳 Tree',     name_ar: 'شجرة' },
+    { min: 1000, name: '🛡️ Guardian', name_ar: 'حارس' },
   ];
 
   const REWARDS = [
-    { id: 'ecostars',    emoji: '🌟', name: 'Eco Starter Certificate',                cost: 50   },
-    { id: 'house5',      emoji: '🏅', name: '5 House Points Awarded',                 cost: 100  },
-    { id: 'recyclehero', emoji: '♻️', name: 'Recycling Hero Certificate',             cost: 200  },
-    { id: 'watersaver',  emoji: '💧', name: 'Water Saver Certificate + 10 House Points', cost: 350 },
-    { id: 'energychamp', emoji: '⚡', name: 'Energy Champion Certificate',            cost: 500  },
-    { id: 'ambassador',  emoji: '📌', name: 'Earth Protectors Eco Ambassador Pin',    cost: 750  },
-    { id: 'ghaf',        emoji: '🌳', name: 'Ghaf Guardian School Recognition',       cost: 1000 },
-    { id: 'superstar',   emoji: '🏆', name: 'Sustainability Superstar — Champion of the Month', cost: 1500 },
+    { id: 'ecostars',    emoji: '🌟', name: 'Eco Starter Certificate',                name_ar: 'شهادة المبتدئ البيئي',          cost: 50   },
+    { id: 'house5',      emoji: '🏅', name: '5 House Points Awarded',                 name_ar: 'منح 5 نقاط للبيت',              cost: 100  },
+    { id: 'recyclehero', emoji: '♻️', name: 'Recycling Hero Certificate',             name_ar: 'شهادة بطل إعادة التدوير',       cost: 200  },
+    { id: 'watersaver',  emoji: '💧', name: 'Water Saver Certificate + 10 House Points', name_ar: 'شهادة موفّر المياه + 10 نقاط للبيت', cost: 350 },
+    { id: 'energychamp', emoji: '⚡', name: 'Energy Champion Certificate',            name_ar: 'شهادة بطل الطاقة',              cost: 500  },
+    { id: 'ambassador',  emoji: '📌', name: 'Earth Protectors Eco Ambassador Pin',    name_ar: 'دبوس سفير حماة الأرض البيئي',   cost: 750  },
+    { id: 'ghaf',        emoji: '🌳', name: 'Ghaf Guardian School Recognition',       name_ar: 'تكريم حارس الغاف المدرسي',      cost: 1000 },
+    { id: 'superstar',   emoji: '🏆', name: 'Sustainability Superstar — Champion of the Month', name_ar: 'نجم الاستدامة — بطل الشهر', cost: 1500 },
   ];
 
   const HOUSES = [
-    { key: 'falcon',  name: 'Falcon',  emoji: '🦅', color: '#ef4444' },
-    { key: 'oryx',    name: 'Oryx',    emoji: '🐐', color: '#f59e0b' },
-    { key: 'ghaf',    name: 'Ghaf',    emoji: '🌳', color: '#16a34a' },
-    { key: 'gazelle', name: 'Gazelle', emoji: '🦌', color: '#3b82f6' },
+    { key: 'falcon',  name: 'Falcon',  name_ar: 'الصقر', emoji: '🦅', color: '#ef4444' },
+    { key: 'oryx',    name: 'Oryx',    name_ar: 'المها', emoji: '🐐', color: '#f59e0b' },
+    { key: 'ghaf',    name: 'Ghaf',    name_ar: 'الغاف', emoji: '🌳', color: '#16a34a' },
+    { key: 'gazelle', name: 'Gazelle', name_ar: 'الغزال', emoji: '🦌', color: '#3b82f6' },
   ];
 
   const AVATARS = ['🦊','🐼','🐨','🦁','🐯','🐰','🐶','🐱','🐵','🐸','🐧','🦉','🐢','🦋','🐝','🦄','🐬','🐙'];
 
-  // Friendly demo classmates so the boards aren't empty on day one.
   const CLASSMATES = [
     { name: 'Layla', avatar: '🦊', pts: 640, house: 'falcon' },
     { name: 'Omar',  avatar: '🐼', pts: 480, house: 'ghaf' },
@@ -530,43 +547,41 @@
   ];
 
   const BADGES = [
-    { id: 'first',     emoji: '🌱', name: 'First Step',     desc: 'Complete your first habit', test: m => m.total > 0 },
-    { id: 'c100',      emoji: '💯', name: 'Century',        desc: 'Reach 100 points',          test: m => m.total >= 100 },
-    { id: 'c250',      emoji: '♻️', name: 'Eco Helper',     desc: 'Reach 250 points',          test: m => m.total >= 250 },
-    { id: 'c500',      emoji: '🌟', name: 'High Five',      desc: 'Reach 500 points',          test: m => m.total >= 500 },
-    { id: 'c1000',     emoji: '🛡️', name: 'Guardian',       desc: 'Reach 1000 points',         test: m => m.total >= 1000 },
-    { id: 's3',        emoji: '🔥', name: 'On a Roll',      desc: '3-day streak',              test: m => m.streak >= 3 },
-    { id: 's7',        emoji: '⚡', name: 'Week Warrior',   desc: '7-day streak',              test: m => m.streak >= 7 },
-    { id: 'allcat',    emoji: '🌍', name: 'All-Rounder',    desc: 'A habit from every area in a day', test: m => categoriesToday(m) >= CATEGORIES.length },
-    { id: 'perfect',   emoji: '✅', name: 'Perfect Day',    desc: 'Complete every habit in a day', test: m => HABITS.every(h => m.checked[h.id]) },
-    { id: 'mission5',  emoji: '🎯', name: 'Mission Master', desc: 'Finish 5 daily missions',   test: m => m.missionsCompleted >= 5 },
-    { id: 'weekly',    emoji: '🗓️', name: 'Challenge Champ',desc: 'Finish a weekly challenge', test: m => !!m.weeklyDone },
-    { id: 'collector', emoji: '🎁', name: 'Collector',      desc: 'Claim 4 rewards',           test: m => Object.keys(m.claimed || {}).length >= 4 },
+    { id: 'first',     emoji: '🌱', name: 'First Step',      name_ar: 'الخطوة الأولى', desc: 'Complete your first habit',        desc_ar: 'أكمل أول عادة لك',          test: m => m.total > 0 },
+    { id: 'c100',      emoji: '💯', name: 'Century',         name_ar: 'المئة',         desc: 'Reach 100 points',                 desc_ar: 'اجمع 100 نقطة',            test: m => m.total >= 100 },
+    { id: 'c250',      emoji: '♻️', name: 'Eco Helper',      name_ar: 'مساعد البيئة',  desc: 'Reach 250 points',                 desc_ar: 'اجمع 250 نقطة',            test: m => m.total >= 250 },
+    { id: 'c500',      emoji: '🌟', name: 'High Five',       name_ar: 'الخمسمئة',      desc: 'Reach 500 points',                 desc_ar: 'اجمع 500 نقطة',            test: m => m.total >= 500 },
+    { id: 'c1000',     emoji: '🛡️', name: 'Guardian',        name_ar: 'الحارس',        desc: 'Reach 1000 points',                desc_ar: 'اجمع 1000 نقطة',           test: m => m.total >= 1000 },
+    { id: 's3',        emoji: '🔥', name: 'On a Roll',       name_ar: 'انطلاقة',       desc: '3-day streak',                     desc_ar: 'سلسلة 3 أيام',             test: m => m.streak >= 3 },
+    { id: 's7',        emoji: '⚡', name: 'Week Warrior',    name_ar: 'محارب الأسبوع', desc: '7-day streak',                     desc_ar: 'سلسلة 7 أيام',             test: m => m.streak >= 7 },
+    { id: 'allcat',    emoji: '🌍', name: 'All-Rounder',     name_ar: 'شامل',          desc: 'A habit from every area in a day', desc_ar: 'عادة من كل مجال في يوم',    test: m => categoriesToday(m) >= CATEGORIES.length },
+    { id: 'perfect',   emoji: '✅', name: 'Perfect Day',     name_ar: 'يوم مثالي',     desc: 'Complete every habit in a day',    desc_ar: 'أكمل كل العادات في يوم',    test: m => HABITS.every(h => m.checked[h.id]) },
+    { id: 'mission5',  emoji: '🎯', name: 'Mission Master',  name_ar: 'سيد المهام',    desc: 'Finish 5 daily missions',          desc_ar: 'أنجز 5 مهام يومية',        test: m => m.missionsCompleted >= 5 },
+    { id: 'weekly',    emoji: '🗓️', name: 'Challenge Champ', name_ar: 'بطل التحدي',    desc: 'Finish a weekly challenge',        desc_ar: 'أنجز تحدياً أسبوعياً',     test: m => !!m.weeklyDone },
+    { id: 'collector', emoji: '🎁', name: 'Collector',       name_ar: 'جامع الجوائز',  desc: 'Claim 4 rewards',                  desc_ar: 'استلم 4 جوائز',            test: m => Object.keys(m.claimed || {}).length >= 4 },
   ];
 
-  // The 17 UN Sustainable Development Goals — official short titles + colours.
   const SDGS = [
-    { n: 1,  name: 'No Poverty',                          color: '#E5243B' },
-    { n: 2,  name: 'Zero Hunger',                         color: '#DDA63A' },
-    { n: 3,  name: 'Good Health & Well-being',            color: '#4C9F38' },
-    { n: 4,  name: 'Quality Education',                   color: '#C5192D' },
-    { n: 5,  name: 'Gender Equality',                     color: '#FF3A21' },
-    { n: 6,  name: 'Clean Water & Sanitation',            color: '#26BDE2' },
-    { n: 7,  name: 'Affordable & Clean Energy',           color: '#FCC30B' },
-    { n: 8,  name: 'Decent Work & Economic Growth',       color: '#A21942' },
-    { n: 9,  name: 'Industry, Innovation & Infrastructure', color: '#FD6925' },
-    { n: 10, name: 'Reduced Inequalities',                color: '#DD1367' },
-    { n: 11, name: 'Sustainable Cities & Communities',    color: '#FD9D24' },
-    { n: 12, name: 'Responsible Consumption & Production', color: '#BF8B2E' },
-    { n: 13, name: 'Climate Action',                      color: '#3F7E44' },
-    { n: 14, name: 'Life Below Water',                    color: '#0A97D9' },
-    { n: 15, name: 'Life on Land',                        color: '#56C02B' },
-    { n: 16, name: 'Peace, Justice & Strong Institutions', color: '#00689D' },
-    { n: 17, name: 'Partnerships for the Goals',          color: '#19486A' },
+    { n: 1,  name: 'No Poverty',                          name_ar: 'القضاء على الفقر',                  color: '#E5243B' },
+    { n: 2,  name: 'Zero Hunger',                         name_ar: 'القضاء التام على الجوع',            color: '#DDA63A' },
+    { n: 3,  name: 'Good Health & Well-being',            name_ar: 'الصحة الجيدة والرفاه',              color: '#4C9F38' },
+    { n: 4,  name: 'Quality Education',                   name_ar: 'التعليم الجيد',                     color: '#C5192D' },
+    { n: 5,  name: 'Gender Equality',                     name_ar: 'المساواة بين الجنسين',              color: '#FF3A21' },
+    { n: 6,  name: 'Clean Water & Sanitation',            name_ar: 'المياه النظيفة والنظافة الصحية',    color: '#26BDE2' },
+    { n: 7,  name: 'Affordable & Clean Energy',           name_ar: 'طاقة نظيفة وبأسعار معقولة',         color: '#FCC30B' },
+    { n: 8,  name: 'Decent Work & Economic Growth',       name_ar: 'العمل اللائق ونمو الاقتصاد',        color: '#A21942' },
+    { n: 9,  name: 'Industry, Innovation & Infrastructure', name_ar: 'الصناعة والابتكار والبنية التحتية', color: '#FD6925' },
+    { n: 10, name: 'Reduced Inequalities',                name_ar: 'الحد من أوجه عدم المساواة',         color: '#DD1367' },
+    { n: 11, name: 'Sustainable Cities & Communities',    name_ar: 'مدن ومجتمعات مستدامة',              color: '#FD9D24' },
+    { n: 12, name: 'Responsible Consumption & Production', name_ar: 'الاستهلاك والإنتاج المسؤولان',      color: '#BF8B2E' },
+    { n: 13, name: 'Climate Action',                      name_ar: 'العمل المناخي',                     color: '#3F7E44' },
+    { n: 14, name: 'Life Below Water',                    name_ar: 'الحياة تحت الماء',                  color: '#0A97D9' },
+    { n: 15, name: 'Life on Land',                        name_ar: 'الحياة في البر',                    color: '#56C02B' },
+    { n: 16, name: 'Peace, Justice & Strong Institutions', name_ar: 'السلام والعدل والمؤسسات القوية',    color: '#00689D' },
+    { n: 17, name: 'Partnerships for the Goals',          name_ar: 'عقد الشراكات لتحقيق الأهداف',        color: '#19486A' },
   ];
   function sdg(n) { return SDGS[n - 1]; }
 
-  // Standard mapping of each habit to the SDG it most supports.
   const SDG_MAP = {
     bottle: 12, meatless: 13, lights: 7, water: 6, recyclepaper: 12,
     walk: 13, sortbins: 12, classlights: 7, litter: 11, bothsides: 12,
@@ -574,8 +589,6 @@
     cleanup: 15, teachfamily: 7,
   };
 
-  // A real Sharjah / Kalba fact for each SDG our habits touch, so every
-  // completed habit links the global goal to something close to home.
   const LOCAL_FACTS = {
     4:  'Sharjah was named UNESCO World Book Capital 2019 — sharing books helps everyone learn! 📚',
     6:  'Most of Sharjah’s tap water comes from the sea by desalination, which uses lots of energy — every drop you save counts! 💧',
@@ -586,6 +599,18 @@
     15: 'Kalba’s Khor Kalba mangroves are a protected reserve, home to the rare Arabian collared kingfisher! 🌳',
     default: 'Every eco-action helps Sharjah and Kalba reach the Global Goals! 🌱',
   };
+  const LOCAL_FACTS_AR = {
+    4:  'سُمّيت الشارقة عاصمة عالمية للكتاب عام 2019 — مشاركة الكتب تساعد الجميع على التعلّم! 📚',
+    6:  'معظم مياه الشرب في الشارقة تأتي من البحر عبر التحلية وتستهلك طاقة كبيرة — كل قطرة توفّرها مهمة! 💧',
+    7:  'محطة تحويل النفايات إلى طاقة في الشارقة تحوّل النفايات إلى كهرباء نظيفة لآلاف المنازل! ⚡',
+    11: 'تنمو كلباء كمدينة للسياحة البيئية تحمي شواطئها وجبالها وحياتها البرية للجميع. 🏞️',
+    12: 'تسعى الشارقة لتكون مدينة خالية من النفايات — ومركز بيئة من أكبر مراكز إعادة التدوير في الشرق الأوسط! ♻️',
+    13: 'استضافت الإمارات مؤتمر COP28 وتهدف للحياد المناخي بحلول 2050 — خياراتك الصغيرة تقلّل الكربون! 🌍',
+    15: 'أشجار القرم في خور كلباء محمية طبيعية وموطن لطائر الرفراف الكلباوي النادر! 🌳',
+    default: 'كل عمل بيئي يساعد الشارقة وكلباء على تحقيق الأهداف العالمية! 🌱',
+  };
+  function factEn(n) { return LOCAL_FACTS[n] || LOCAL_FACTS.default; }
+  function factAr(n) { return LOCAL_FACTS_AR[n] || LOCAL_FACTS_AR.default; }
 
   /* ---------- Date helpers ---------- */
   function todayKey() {
@@ -604,10 +629,10 @@
   }
   function dayNumber() { return Math.floor(Date.now() / 86400000); }
 
-  /* ---------- Store layer (localStorage; Firebase-ready) ---------- */
-  const REG_KEY = 'greenquest-students';   // all student records on this device
-  const CUR_KEY = 'greenquest-current';    // id of the active student
-  const MUTE_KEY = 'greenquest-muted';
+  /* ---------- Store layer ---------- */
+  const REG_KEY = 'greenquest-students';
+  const CUR_KEY = 'greenquest-current';
+  const LANG_KEY = 'greenquest-lang';
 
   function loadRegistry() {
     try { return JSON.parse(localStorage.getItem(REG_KEY)) || {}; } catch (e) { return {}; }
@@ -619,13 +644,13 @@
 
   let students = loadRegistry();
   let currentId = localStorage.getItem(CUR_KEY) || null;
-  let me = null;            // the active student record
+  let me = null;
   let boardTab = 'students';
-  let muted = false;            // sound effects on; read-aloud is always available
+  let muted = false;
+  let speakLang = localStorage.getItem(LANG_KEY) || 'en';   // read-aloud language
 
   function slug(s) { return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'); }
 
-  // Make sure a student record has every field we expect.
   function ensureStudent(s) {
     s.total = s.total || 0;
     s.streak = s.streak || 0;
@@ -642,7 +667,7 @@
     return s;
   }
 
-  /* ---------- Audio (Web Audio API — no files needed) ---------- */
+  /* ---------- Audio (Web Audio API) ---------- */
   let actx = null;
   function audio() {
     if (muted) return null;
@@ -668,45 +693,59 @@
     badge:  () => { [784,988,1175].forEach((f,i)=>tone(f, i*0.08, 0.2, 'sine', 0.18)); },
   };
 
-  /* ---------- Text-to-speech (read aloud) ----------
-     Uses the browser's built-in voices, preferring a child-friendly
-     female English voice, at normal speaking speed. */
-  let ttsVoice = null;
+  /* ---------- Text-to-speech (bilingual) ----------
+     Picks a child-friendly female English voice and an Arabic voice.
+     readAloud() speaks in the chosen language; if Arabic is selected
+     but no Arabic voice exists, it stays text-only (no speech). */
+  let ttsVoiceEn = null, ttsVoiceAr = null;
+  function byPref(voices, prefs, langPrefix) {
+    for (const p of prefs) {
+      const v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(langPrefix) && v.name.toLowerCase().includes(p));
+      if (v) return v;
+    }
+    return null;
+  }
   function pickVoice() {
     if (!('speechSynthesis' in window)) return;
     const voices = speechSynthesis.getVoices();
     if (!voices.length) return;
-    const prefs = ['google uk english female','microsoft zira','zira','samantha',
-      'microsoft hazel','hazel','google us english','karen','susan','tessa','fiona','female'];
-    for (const p of prefs) {
-      const v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en') && v.name.toLowerCase().includes(p));
-      if (v) { ttsVoice = v; return; }
-    }
-    ttsVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) || voices[0];
+    const enPrefs = ['google uk english female','microsoft zira','zira','samantha','microsoft hazel','hazel','google us english','karen','susan','tessa','fiona','female'];
+    ttsVoiceEn = byPref(voices, enPrefs, 'en') || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) || voices[0];
+    const arPrefs = ['hoda','salma','amira','laila','zariyah','sara','google'];
+    ttsVoiceAr = byPref(voices, arPrefs, 'ar') || voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ar')) || null;
   }
-  function speak(text) {
-    if (!('speechSynthesis' in window) || !text) return;
+  function hasArabicVoice() { return !!ttsVoiceAr; }
+  function stripEmoji(t) { return String(t).replace(/[\p{Extended_Pictographic}️‍]/gu, '').replace(/\s{2,}/g, ' ').trim(); }
+  function speakInLang(text, lang) {
+    if (!('speechSynthesis' in window) || !text) return false;
+    const voice = lang === 'ar' ? ttsVoiceAr : ttsVoiceEn;
+    if (lang === 'ar' && !voice) return false;   // no Arabic voice → text only
     try {
-      speechSynthesis.cancel();                 // stop anything already talking
+      speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      if (ttsVoice) u.voice = ttsVoice;
-      u.lang = (ttsVoice && ttsVoice.lang) || 'en-GB';
+      if (voice) u.voice = voice;
+      u.lang = (voice && voice.lang) || (lang === 'ar' ? 'ar-AE' : 'en-GB');
       u.rate = 1;        // normal speed
-      u.pitch = 1.15;    // a touch higher = friendlier for children
+      u.pitch = 1.12;    // friendly for children
       u.volume = 1;
       speechSynthesis.speak(u);
-    } catch (e) {}
+      return true;
+    } catch (e) { return false; }
   }
-  // Remove emoji/symbols so the voice reads clean words only.
-  function speakClean(text) {
-    speak(String(text).replace(/[\p{Extended_Pictographic}️‍]/gu, '').replace(/\s{2,}/g, ' ').trim());
+  // Speak the right language; ar falls back to text-only if no ar voice.
+  function readAloud(en, ar) {
+    if (speakLang === 'ar') return speakInLang(stripEmoji(ar || en), 'ar');
+    return speakInLang(stripEmoji(en), 'en');
   }
   function speakStats() {
     if (!me) return;
     const li = levelInfo();
     let today = 0; HABITS.forEach(h => { if (me.checked[h.id]) today += h.pts; });
-    speakClean('Hi ' + me.name + '. You have ' + me.total + ' points and a ' + me.streak +
-      ' day streak. Today you earned ' + today + ' points. Your level is ' + li.current.name + '. Keep growing, champion!');
+    const en = 'Hi ' + me.name + '. You have ' + me.total + ' points and a ' + me.streak +
+      ' day streak. Today you earned ' + today + ' points. Your level is ' + li.current.name + '. Keep growing, champion!';
+    const ar = 'مرحباً ' + me.name + '. لديك ' + me.total + ' نقطة وسلسلة ' + me.streak +
+      ' أيام. اليوم حصلت على ' + today + ' نقطة. مستواك هو ' + li.current.name_ar + '. واصل النمو يا بطل!';
+    readAloud(en, ar);
   }
   if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
@@ -716,13 +755,15 @@
     for (let i = 0; i < LEVELS.length; i++) {
       if (me.total >= LEVELS[i].min) { current = LEVELS[i]; next = LEVELS[i+1] || null; }
     }
-    let pct = 100, nextText = 'Max level reached! 🌟';
+    let pct = 100;
+    let nextEn = 'Max level reached! 🌟', nextAr = 'وصلت لأعلى مستوى! 🌟';
     if (next) {
       const span = next.min - current.min;
       pct = Math.round(((me.total - current.min) / span) * 100);
-      nextText = (next.min - me.total) + ' pts to ' + next.name;
+      nextEn = (next.min - me.total) + ' pts to ' + next.name;
+      nextAr = (next.min - me.total) + ' نقطة حتى ' + next.name_ar;
     }
-    return { current, pct, nextText };
+    return { current, pct, nextEn, nextAr };
   }
 
   function categoriesToday(m) {
@@ -730,18 +771,11 @@
     HABITS.forEach(h => { if (m.checked[h.id]) cats.add(h.cat); });
     return cats.size;
   }
-
   function missionHabit() { return HABITS[dayNumber() % HABITS.length]; }
 
-  /* ---------- Daily / weekly rollover ---------- */
   function rolloverIfNeeded() {
-    if (me.checkedDay !== todayKey()) {
-      me.checkedDay = todayKey();
-      me.checked = {};
-    }
-    if (!me.weekly || me.weekly.week !== weekKey()) {
-      me.weekly = { week: weekKey(), points: 0 };
-    }
+    if (me.checkedDay !== todayKey()) { me.checkedDay = todayKey(); me.checked = {}; }
+    if (!me.weekly || me.weekly.week !== weekKey()) { me.weekly = { week: weekKey(), points: 0 }; }
   }
 
   /* ============ RENDERING ============ */
@@ -763,35 +797,41 @@
     document.getElementById('heroAv').textContent = me.avatar;
     document.getElementById('heroName').textContent = me.name;
     const house = HOUSES.find(h => h.key === me.house);
-    document.getElementById('heroSub').textContent = 'Year ' + me.year + ' · ' + (house ? house.emoji + ' ' + house.name : '—') + ' House';
+    document.getElementById('heroSub').innerHTML = bi(
+      'Year ' + me.year + ' · ' + (house ? house.emoji + ' ' + house.name + ' House' : '—'),
+      'الصف ' + me.year + ' · ' + (house ? house.emoji + ' بيت ' + house.name_ar : '—')
+    );
 
     const li = levelInfo();
-    document.getElementById('heroLvl').textContent = li.current.name;
+    document.getElementById('heroLvl').textContent = li.current.name + ' · ' + li.current.name_ar;
     document.getElementById('totalScore').textContent = me.total;
     document.getElementById('streak').textContent = me.streak;
     document.getElementById('todayPts').textContent = todayPts;
     document.getElementById('badgeCount').textContent = Object.keys(me.badges).length;
 
-    document.getElementById('levelName').textContent = li.current.name;
-    document.getElementById('levelNext').textContent = li.nextText;
+    document.getElementById('levelName').textContent = li.current.name + ' · ' + li.current.name_ar;
+    document.getElementById('levelNext').innerHTML = bi(li.nextEn, li.nextAr);
     document.getElementById('barFill').style.width = Math.max(0, Math.min(100, li.pct)) + '%';
 
     // Daily mission
     const mh = missionHabit();
     const mDone = !!me.checked[mh.id];
     document.getElementById('missionEmoji').textContent = mh.emoji;
-    document.getElementById('missionName').textContent = mh.name;
-    document.getElementById('missionDesc').textContent = mDone ? 'Mission complete — bonus earned! 🎉' : 'Do this today for +' + MISSION_BONUS + ' bonus points!';
-    document.getElementById('missionPill').textContent = mDone ? 'Done ✓' : '+' + MISSION_BONUS;
+    document.getElementById('missionName').innerHTML = bi(mh.name, mh.name_ar);
+    document.getElementById('missionDesc').innerHTML = mDone
+      ? bi('Mission complete — bonus earned! 🎉', 'اكتملت المهمة — حصلت على مكافأة! 🎉')
+      : bi('Do this today for +' + MISSION_BONUS + ' bonus points!', 'افعلها اليوم لتحصل على +' + MISSION_BONUS + ' نقطة إضافية!');
+    document.getElementById('missionPill').innerHTML = mDone ? bi('Done ✓', 'تم ✓') : '+' + MISSION_BONUS;
     document.getElementById('missionCard').classList.toggle('done', mDone);
 
     // Weekly challenge
     const wp = me.weekly.points;
     const wpct = Math.round(Math.min(100, (wp / WEEKLY_TARGET) * 100));
-    document.getElementById('challengeName').textContent = 'Earn ' + WEEKLY_TARGET + ' points this week';
-    document.getElementById('challengeDesc').textContent = me.weeklyDone === weekKey()
-      ? 'Challenge complete! +' + WEEKLY_BONUS + ' bonus earned 🏆'
-      : wp + ' / ' + WEEKLY_TARGET + ' pts · ' + Math.max(0, WEEKLY_TARGET - wp) + ' to go';
+    document.getElementById('challengeName').innerHTML = bi('Earn ' + WEEKLY_TARGET + ' points this week', 'اجمع ' + WEEKLY_TARGET + ' نقطة هذا الأسبوع');
+    document.getElementById('challengeDesc').innerHTML = me.weeklyDone === weekKey()
+      ? bi('Challenge complete! +' + WEEKLY_BONUS + ' bonus earned 🏆', 'اكتمل التحدي! +' + WEEKLY_BONUS + ' مكافأة 🏆')
+      : bi(wp + ' / ' + WEEKLY_TARGET + ' pts · ' + Math.max(0, WEEKLY_TARGET - wp) + ' to go',
+           wp + ' / ' + WEEKLY_TARGET + ' نقطة · المتبقي ' + Math.max(0, WEEKLY_TARGET - wp));
     document.getElementById('challengeFill').style.width = wpct + '%';
   }
 
@@ -802,7 +842,7 @@
     CATEGORIES.forEach(cat => {
       const heading = document.createElement('div');
       heading.className = 'cat-title';
-      heading.innerHTML = '<span class="cat-emoji">' + cat.emoji + '</span>' + cat.title;
+      heading.innerHTML = '<span class="cat-emoji">' + cat.emoji + '</span><span>' + bi(cat.title, cat.title_ar) + '</span>';
       listEl.appendChild(heading);
 
       HABITS.filter(h => h.cat === cat.key).forEach(h => {
@@ -811,19 +851,24 @@
         const g = sdg(SDG_MAP[h.id]);
         const card = document.createElement('div');
         card.className = 'habit' + (done ? ' done' : '');
+        const ptsEn = '+' + h.pts + ' points' + (isMission ? ' <span class="star">· 🎯 Mission +' + MISSION_BONUS + '</span>' : '');
+        const ptsAr = '+' + h.pts + ' نقطة' + (isMission ? ' <span class="star">· 🎯 مهمة +' + MISSION_BONUS + '</span>' : '');
         card.innerHTML =
           '<div class="emoji">' + h.emoji + '</div>' +
-          '<div class="info"><div class="name">' + h.name + '</div>' +
-          '<div class="pts">+' + h.pts + ' points' + (isMission ? ' <span class="star">· 🎯 Mission +' + MISSION_BONUS + '</span>' : '') + '</div>' +
-          '<div class="sdg-badge" style="background:' + g.color + '">SDG ' + g.n + ' · ' + g.name + '</div>' +
+          '<div class="info">' +
+            '<div class="name">' + bi(h.name, h.name_ar) + '</div>' +
+            '<div class="pts">' + bi(ptsEn, ptsAr) + '</div>' +
+            '<div class="sdg-badge" style="background:' + g.color + '">' + bi('SDG ' + g.n + ' · ' + g.name, 'الهدف ' + g.n + ' · ' + g.name_ar) + '</div>' +
           '</div>' +
           '<button class="say" aria-label="Read aloud" title="Read aloud">🔊</button>' +
           '<div class="check">✓</div>';
         card.addEventListener('click', () => toggle(h));
-        const fact = LOCAL_FACTS[g.n] || LOCAL_FACTS.default;
         card.querySelector('.say').addEventListener('click', e => {
-          e.stopPropagation();   // don't toggle the habit when tapping the speaker
-          speakClean(h.name + '. SDG ' + g.n + ', ' + g.name + '. ' + fact);
+          e.stopPropagation();
+          readAloud(
+            h.name + '. SDG ' + g.n + ', ' + g.name + '. ' + factEn(g.n),
+            h.name_ar + '. الهدف ' + g.n + '، ' + g.name_ar + '. ' + factAr(g.n)
+          );
         });
         listEl.appendChild(card);
       });
@@ -837,27 +882,26 @@
       const claimed = !!me.claimed[r.id];
       const unlocked = me.total >= r.cost;
       const cls = claimed ? 'claimed' : (unlocked ? 'unlocked' : 'locked');
-      const tag = claimed ? 'Claimed ✓' : (unlocked ? 'Claim!' : 'Locked 🔒');
+      const tag = claimed ? bi('Claimed ✓', 'تم ✓') : (unlocked ? bi('Claim!', 'احصل!') : bi('Locked 🔒', 'مقفل'));
       const card = document.createElement('div');
       card.className = 'reward ' + cls;
       card.innerHTML =
         '<button class="say" aria-label="Read aloud" title="Read aloud">🔊</button>' +
         '<div class="r-tag">' + tag + '</div>' +
         '<div class="r-emoji">' + r.emoji + '</div>' +
-        '<div class="r-name">' + r.name + '</div>' +
-        '<div class="r-cost">' + r.cost + ' pts</div>' +
-        (claimed ? '<button class="cert-btn">⬇️ Certificate</button>' : '');
+        '<div class="r-name">' + bi(r.name, r.name_ar) + '</div>' +
+        '<div class="r-cost">' + r.cost + ' pts · نقطة</div>' +
+        (claimed ? '<button class="cert-btn">' + bi('⬇️ Certificate', '⬇️ الشهادة') + '</button>' : '');
       if (unlocked && !claimed) card.addEventListener('click', () => claimReward(r));
-      if (claimed) card.querySelector('.cert-btn').addEventListener('click', () => downloadCertificate(r));
+      if (claimed) card.querySelector('.cert-btn').addEventListener('click', e => { e.stopPropagation(); downloadCertificate(r); });
       card.querySelector('.say').addEventListener('click', e => {
-        e.stopPropagation();   // don't claim when tapping the speaker
-        speakClean(r.name + '. ' + r.cost + ' points.');
+        e.stopPropagation();
+        readAloud(r.name + '. ' + r.cost + ' points.', r.name_ar + '. ' + r.cost + ' نقطة.');
       });
       storeEl.appendChild(card);
     });
   }
 
-  // Gather everyone (real local students + demo classmates) for the boards.
   function allPeople() {
     const list = Object.values(students).map(s => ({
       name: s.name, avatar: s.avatar, pts: s.total, house: s.house, me: s.id === currentId
@@ -881,8 +925,8 @@
         row.innerHTML =
           '<div class="rank">' + medal + '</div>' +
           '<div class="avatar">' + p.avatar + '</div>' +
-          '<div class="who">' + p.name + (p.me ? ' (You)' : '') +
-            '<div class="lvl">' + (house ? house.emoji + ' ' + house.name : '') + '</div></div>' +
+          '<div class="who">' + p.name + (p.me ? ' (You · أنت)' : '') +
+            '<div class="lvl">' + (house ? house.emoji + ' ' + house.name + ' · ' + house.name_ar : '') + '</div></div>' +
           '<div class="score">' + p.pts + '</div>';
         boardEl.appendChild(row);
       });
@@ -901,7 +945,7 @@
         row.innerHTML =
           '<div class="rank">' + medal + '</div>' +
           '<div class="avatar">' + h.emoji + '</div>' +
-          '<div class="who">' + h.name + ' House' + (isMine ? ' (Yours)' : '') +
+          '<div class="who">' + h.name + ' House · بيت ' + h.name_ar + (isMine ? ' (Yours · بيتك)' : '') +
             '<div class="house-bar"><div style="width:' + Math.round(h.pts/max*100) + '%;background:' + h.color + '"></div></div></div>' +
           '<div class="score">' + h.pts + '</div>';
         boardEl.appendChild(row);
@@ -918,8 +962,8 @@
       card.className = 'badge ' + (earned ? 'earned' : 'locked');
       card.innerHTML =
         '<div class="b-emoji">' + (earned ? b.emoji : '🔒') + '</div>' +
-        '<div class="b-name">' + b.name + '</div>' +
-        '<div class="b-desc">' + b.desc + '</div>';
+        '<div class="b-name">' + bi(b.name, b.name_ar) + '</div>' +
+        '<div class="b-desc">' + bi(b.desc, b.desc_ar) + '</div>';
       grid.appendChild(card);
     });
   }
@@ -927,14 +971,15 @@
   function renderSDG() {
     const grid = document.getElementById('sdgGrid');
     grid.innerHTML = '';
-    const active = new Set(Object.values(SDG_MAP));   // goals our habits support
+    const active = new Set(Object.values(SDG_MAP));
     SDGS.forEach(g => {
+      const star = active.has(g.n) ? ' ★' : '';
       const card = document.createElement('div');
       card.className = 'sdg-card';
       card.style.background = g.color;
       card.innerHTML =
         '<div class="gn">' + g.n + '</div>' +
-        '<div class="gt">' + g.name + (active.has(g.n) ? ' <span class="gactive">★</span>' : '') + '</div>';
+        '<div class="gt">' + bi(g.name + star, g.name_ar + star) + '</div>';
       grid.appendChild(card);
     });
   }
@@ -943,11 +988,10 @@
   function addPoints(n) {
     me.total += n;
     me.weekly.points = Math.max(0, me.weekly.points + n);
-    // Weekly challenge completion (once per week).
     if (n > 0 && me.weekly.points >= WEEKLY_TARGET && me.weeklyDone !== weekKey()) {
       me.weeklyDone = weekKey();
       me.total += WEEKLY_BONUS;
-      showToast('🗓️ Weekly challenge done! +' + WEEKLY_BONUS + ' bonus!');
+      showToast('🗓️ Weekly challenge done! +' + WEEKLY_BONUS + ' bonus!', '🗓️ اكتمل تحدي الأسبوع! +' + WEEKLY_BONUS + ' مكافأة!');
       sfx.level(); burstConfetti(50);
     }
   }
@@ -961,7 +1005,6 @@
     if (wasDone) {
       delete me.checked[h.id];
       addPoints(-h.pts);
-      // Take back the mission bonus if it was awarded today.
       if (isMission && me.missionAwarded === todayKey()) {
         addPoints(-MISSION_BONUS);
         me.missionAwarded = null;
@@ -971,12 +1014,10 @@
     } else {
       me.checked[h.id] = true;
       addPoints(h.pts);
-
       if (me.lastDay !== todayKey()) {
         me.streak = (me.lastDay === yesterdayKey()) ? me.streak + 1 : 1;
         me.lastDay = todayKey();
       }
-      // Mission bonus (once per day).
       if (isMission && me.missionAwarded !== todayKey()) {
         addPoints(MISSION_BONUS);
         me.missionAwarded = todayKey();
@@ -986,8 +1027,9 @@
     }
 
     me.lastActive = todayKey();
-    if (levelInfo().current.name !== beforeLevel && !wasDone) {
-      showToast('⬆️ Level up! ' + levelInfo().current.name);
+    const after = levelInfo();
+    if (after.current.name !== beforeLevel && !wasDone) {
+      showToast('⬆️ Level up! ' + after.current.name, '⬆️ ترقية! ' + after.current.name_ar);
       sfx.level(); burstConfetti(60);
     }
     checkBadges();
@@ -1000,9 +1042,9 @@
     me.lastActive = todayKey();
     checkBadges();
     sfx.badge(); burstConfetti(30);
-    showToast('🎁 Claimed: ' + r.name + '! Certificate downloading…');
+    showToast('🎁 Claimed: ' + r.name + '! Certificate downloading…', '🎁 تم استلام: ' + r.name_ar + '! يتم تنزيل الشهادة…');
     render();
-    downloadCertificate(r);   // hand them their PDF certificate right away
+    downloadCertificate(r);
   }
 
   /* ============ PDF certificates ============ */
@@ -1012,50 +1054,43 @@
     return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
   }
 
-  // Draw a landscape A4 certificate with the student's name, class and date.
+  // Note: the PDF uses standard Latin fonts (Arabic glyphs aren't supported
+  // by jsPDF's built-in fonts), so the certificate body is in English.
   function downloadCertificate(reward) {
     const lib = window.jspdf;
-    if (!lib || !lib.jsPDF) { printCertificate(reward); return; }   // offline fallback
+    if (!lib || !lib.jsPDF) { printCertificate(reward); return; }
 
     const { jsPDF } = lib;
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
     const W = 297, H = 210, cx = W / 2;
     const house = HOUSES.find(h => h.key === me.house);
 
-    // Background + decorative borders
     doc.setFillColor(236, 253, 245); doc.rect(0, 0, W, H, 'F');
     doc.setDrawColor(22, 163, 74); doc.setLineWidth(3); doc.rect(10, 10, W - 20, H - 20);
     doc.setDrawColor(34, 197, 94); doc.setLineWidth(0.6); doc.rect(15, 15, W - 30, H - 30);
 
-    // Header
     doc.setFont('helvetica', 'bold'); doc.setFontSize(17); doc.setTextColor(21, 128, 61);
     doc.text('GREEN CHAMPIONS OF ESK', cx, 33, { align: 'center' });
     doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(75, 122, 94);
     doc.text('English School of Kalba', cx, 40, { align: 'center' });
 
-    // Title
     doc.setFont('helvetica', 'bold'); doc.setFontSize(32); doc.setTextColor(20, 83, 45);
     doc.text('Certificate of Achievement', cx, 64, { align: 'center' });
 
-    // Presented to
     doc.setFont('helvetica', 'normal'); doc.setFontSize(13); doc.setTextColor(75, 122, 94);
     doc.text('This certificate is proudly presented to', cx, 82, { align: 'center' });
 
-    // Student name
     doc.setFont('helvetica', 'bold'); doc.setFontSize(34); doc.setTextColor(22, 163, 74);
     doc.text(me.name, cx, 100, { align: 'center' });
 
-    // Class line
     doc.setFont('helvetica', 'normal'); doc.setFontSize(13); doc.setTextColor(20, 83, 45);
     doc.text('Year ' + me.year + '   •   ' + (house ? house.name : '') + ' House', cx, 112, { align: 'center' });
 
-    // Reward
     doc.setFontSize(13); doc.setTextColor(75, 122, 94);
     doc.text('for earning the reward', cx, 128, { align: 'center' });
     doc.setFont('helvetica', 'bold'); doc.setFontSize(19); doc.setTextColor(20, 83, 45);
     doc.text(doc.splitTextToSize(reward.name, W - 80), cx, 140, { align: 'center' });
 
-    // Date + signature
     doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(75, 122, 94);
     doc.text('Date: ' + prettyDate(), 40, 188);
     doc.setDrawColor(120, 120, 120); doc.setLineWidth(0.4); doc.line(W - 90, 182, W - 30, 182);
@@ -1064,35 +1099,34 @@
     doc.save('Certificate-' + slug(me.name) + '-' + slug(reward.name) + '.pdf');
   }
 
-  // Fallback when jsPDF is unavailable: open a styled page and let the
-  // browser's print dialog "Save as PDF".
+  // Print fallback: this one CAN show Arabic, so it's bilingual.
   function printCertificate(reward) {
     const house = HOUSES.find(h => h.key === me.house);
     const w = window.open('', '_blank');
-    if (!w) { showToast('Allow pop-ups to download your certificate.'); return; }
+    if (!w) { showToast('Allow pop-ups to download your certificate.', 'يرجى السماح بالنوافذ المنبثقة لتنزيل الشهادة.'); return; }
     w.document.write(
       '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Certificate</title><style>' +
       '@page{size:A4 landscape;margin:0}' +
-      'body{margin:0;font-family:Georgia,serif;color:#14532d}' +
-      '.c{box-sizing:border-box;width:297mm;height:210mm;padding:24mm;text-align:center;' +
+      'body{margin:0;font-family:Georgia,"Segoe UI",serif;color:#14532d}' +
+      '.c{box-sizing:border-box;width:297mm;height:210mm;padding:22mm;text-align:center;' +
       'background:#ecfdf5;border:3mm solid #16a34a;outline:0.6mm solid #22c55e;outline-offset:-5mm}' +
       '.k{font-size:18pt;font-weight:bold;color:#15803d;letter-spacing:1px}' +
-      '.s{font-size:12pt;color:#4b7a5e;margin-top:4mm}' +
-      '.t{font-size:30pt;font-weight:bold;margin:14mm 0 8mm}' +
-      '.l{font-size:13pt;color:#4b7a5e}' +
-      '.n{font-size:32pt;font-weight:bold;color:#16a34a;margin:6mm 0 4mm}' +
-      '.r{font-size:18pt;font-weight:bold;margin-top:6mm}' +
-      '.f{display:flex;justify-content:space-between;margin-top:18mm;font-size:11pt;color:#4b7a5e}' +
+      '.s{font-size:12pt;color:#4b7a5e;margin-top:3mm}' +
+      '.t{font-size:28pt;font-weight:bold;margin:10mm 0 6mm}' +
+      '.l{font-size:12pt;color:#4b7a5e}' +
+      '.n{font-size:30pt;font-weight:bold;color:#16a34a;margin:5mm 0 3mm}' +
+      '.r{font-size:17pt;font-weight:bold;margin-top:5mm}' +
+      '.f{display:flex;justify-content:space-between;margin-top:14mm;font-size:11pt;color:#4b7a5e}' +
       '.sig{border-top:0.4mm solid #777;padding-top:2mm;width:60mm}' +
       '</style></head><body onload="print()"><div class="c">' +
-      '<div class="k">GREEN CHAMPIONS OF ESK</div><div class="s">English School of Kalba</div>' +
-      '<div class="t">Certificate of Achievement</div>' +
-      '<div class="l">This certificate is proudly presented to</div>' +
+      '<div class="k">GREEN CHAMPIONS OF ESK · أبطال البيئة في مدرسة كلباء</div><div class="s">English School of Kalba · مدرسة كلباء الإنجليزية</div>' +
+      '<div class="t">Certificate of Achievement · شهادة تقدير</div>' +
+      '<div class="l">This certificate is proudly presented to · تُمنح هذه الشهادة بفخر إلى</div>' +
       '<div class="n">' + me.name + '</div>' +
-      '<div class="l">Year ' + me.year + ' &bull; ' + (house ? house.name : '') + ' House</div>' +
-      '<div class="l" style="margin-top:8mm">for earning the reward</div>' +
-      '<div class="r">' + reward.name + '</div>' +
-      '<div class="f"><div>Date: ' + prettyDate() + '</div><div class="sig">Eco Coordinator</div></div>' +
+      '<div class="l">Year ' + me.year + ' &bull; ' + (house ? house.name + ' House · بيت ' + house.name_ar : '') + '</div>' +
+      '<div class="l" style="margin-top:6mm">for earning the reward · لحصوله على جائزة</div>' +
+      '<div class="r">' + reward.name + '<br>' + reward.name_ar + '</div>' +
+      '<div class="f"><div>Date · التاريخ: ' + prettyDate() + '</div><div class="sig">Eco Coordinator · منسق البيئة</div></div>' +
       '</div></body></html>'
     );
     w.document.close();
@@ -1105,34 +1139,37 @@
     });
     if (newly.length) {
       const b = newly[newly.length - 1];
-      setTimeout(() => { showToast('🏅 Badge unlocked: ' + b.name + ' ' + b.emoji); sfx.badge(); burstConfetti(40); }, 350);
+      setTimeout(() => {
+        showToast('🏅 Badge unlocked: ' + b.name + ' ' + b.emoji, '🏅 وسام جديد: ' + b.name_ar + ' ' + b.emoji);
+        sfx.badge(); burstConfetti(40);
+      }, 350);
     }
   }
 
   function celebrate(h, isMission) {
     const allDone = HABITS.every(x => me.checked[x.id]);
     const g = sdg(SDG_MAP[h.id]);
-    const fact = LOCAL_FACTS[g.n] || LOCAL_FACTS.default;
     const gained = h.pts + (isMission ? MISSION_BONUS : 0);
-    let head = '+' + gained + ' pts';
-    if (isMission) head = '🎯 Mission! +' + gained + ' pts';
-    if (allDone) head = '🎉 All done! +' + gained + ' pts';
-    // One combined message: points + SDG goal + a Sharjah/Kalba fact.
-    showToast(head + ' · SDG ' + g.n + ' ' + g.name + ' — ' + fact, 4800);
+    let headEn = '+' + gained + ' pts', headAr = '+' + gained + ' نقطة';
+    if (isMission) { headEn = '🎯 Mission! +' + gained + ' pts'; headAr = '🎯 مهمة! +' + gained + ' نقطة'; }
+    if (allDone)   { headEn = '🎉 All done! +' + gained + ' pts'; headAr = '🎉 أنهيت كل شيء! +' + gained + ' نقطة'; }
+    const en = headEn + ' · SDG ' + g.n + ' ' + g.name + ' — ' + factEn(g.n);
+    const ar = headAr + ' · الهدف ' + g.n + ' ' + g.name_ar + ' — ' + factAr(g.n);
+    showToast(en, ar, 5200);
     sfx.ding();
     burstConfetti(allDone ? 60 : 22);
   }
 
   /* ============ Toast + confetti ============ */
   let toastTimer = null;
-  let lastToast = '';
-  function showToast(msg, dur) {
-    lastToast = msg;
-    document.getElementById('toastText').textContent = msg;
+  let lastToastEn = '', lastToastAr = '';
+  function showToast(en, ar, dur) {
+    lastToastEn = en; lastToastAr = ar || en;
+    document.getElementById('toastText').innerHTML = bi(en, ar || en);
     const t = document.getElementById('toast');
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), dur || 2000);
+    toastTimer = setTimeout(() => t.classList.remove('show'), dur || 2200);
   }
   function burstConfetti(count) {
     const colors = ['#22c55e','#38bdf8','#f59e0b','#16a34a','#a3e635','#34d399','#a855f7'];
@@ -1183,25 +1220,23 @@
     const topHouse = HOUSES.slice().sort((a,b) => houseTotals[b.key] - houseTotals[a.key])[0];
 
     let html = '<div class="tcards">' +
-      '<div class="tcard"><div class="n">' + list.length + '</div><div class="l">Students</div></div>' +
-      '<div class="tcard"><div class="n">' + totalPts + '</div><div class="l">Total Points</div></div>' +
-      '<div class="tcard"><div class="n">' + (list.length ? Math.round(totalPts/list.length) : 0) + '</div><div class="l">Avg / Student</div></div>' +
-      '<div class="tcard"><div class="n">' + (topHouse ? topHouse.emoji : '—') + '</div><div class="l">Top House</div></div>' +
+      '<div class="tcard"><div class="n">' + list.length + '</div><div class="l">' + bi('Students','الطلاب') + '</div></div>' +
+      '<div class="tcard"><div class="n">' + totalPts + '</div><div class="l">' + bi('Total Points','إجمالي النقاط') + '</div></div>' +
+      '<div class="tcard"><div class="n">' + (list.length ? Math.round(totalPts/list.length) : 0) + '</div><div class="l">' + bi('Avg / Student','المعدل للطالب') + '</div></div>' +
+      '<div class="tcard"><div class="n">' + (topHouse ? topHouse.emoji : '—') + '</div><div class="l">' + bi('Top House','البيت الأول') + '</div></div>' +
     '</div>';
 
-    // House standings
-    html += '<div class="section-title" style="margin-top:6px;">🏠 House Standings</div><div class="board">';
+    html += '<div class="section-title" style="margin-top:6px;">🏠 House Standings · ترتيب البيوت</div><div class="board">';
     HOUSES.slice().sort((a,b)=>houseTotals[b.key]-houseTotals[a.key]).forEach(h => {
-      html += '<div class="row"><div class="avatar">' + h.emoji + '</div><div class="who">' + h.name + ' House</div><div class="score">' + houseTotals[h.key] + '</div></div>';
+      html += '<div class="row"><div class="avatar">' + h.emoji + '</div><div class="who">' + h.name + ' House · بيت ' + h.name_ar + '</div><div class="score">' + houseTotals[h.key] + '</div></div>';
     });
     html += '</div>';
 
-    // Student table
-    html += '<div class="section-title">👥 All Students</div>';
+    html += '<div class="section-title">👥 All Students · جميع الطلاب</div>';
     if (!list.length) {
-      html += '<div class="card" style="padding:18px;text-align:center;color:var(--muted);">No students have signed in on this device yet.</div>';
+      html += '<div class="card" style="padding:18px;text-align:center;color:var(--muted);">' + bi('No students have signed in on this device yet.','لم يسجّل أي طالب على هذا الجهاز بعد.') + '</div>';
     } else {
-      html += '<table class="ttable"><thead><tr><th>Name</th><th class="c">Yr</th><th class="c">House</th><th class="c">Pts</th><th class="c">🔥</th><th class="c">🏅</th><th class="c"></th></tr></thead><tbody>';
+      html += '<table class="ttable"><thead><tr><th>' + bi('Name','الاسم') + '</th><th class="c">' + bi('Yr','الصف') + '</th><th class="c">' + bi('House','البيت') + '</th><th class="c">' + bi('Pts','نقاط') + '</th><th class="c">🔥</th><th class="c">🏅</th><th class="c"></th></tr></thead><tbody>';
       list.sort((a,b)=>b.total-a.total).forEach(s => {
         const house = HOUSES.find(h => h.key === s.house);
         html += '<tr>' +
@@ -1211,17 +1246,17 @@
           '<td class="c"><b>' + s.total + '</b></td>' +
           '<td class="c">' + s.streak + '</td>' +
           '<td class="c">' + Object.keys(s.badges||{}).length + '</td>' +
-          '<td class="c"><button class="tiny-btn" onclick="teacherRemove(\'' + s.id + '\')">Remove</button></td>' +
+          '<td class="c"><button class="tiny-btn" onclick="teacherRemove(\'' + s.id + '\')">Remove · إزالة</button></td>' +
         '</tr>';
       });
       html += '</tbody></table>';
     }
-    html += '<div class="actions"><button class="action btn-ghost" onclick="teacherLockAgain()">🔒 Lock dashboard</button></div>';
+    html += '<div class="actions"><button class="action btn-ghost" onclick="teacherLockAgain()">🔒 Lock dashboard · قفل اللوحة</button></div>';
     body.innerHTML = html;
   }
 
   function teacherRemove(id) {
-    if (!confirm('Remove this student record from this device?')) return;
+    if (!confirm('Remove this student record from this device?\nإزالة سجل هذا الطالب من هذا الجهاز؟')) return;
     delete students[id];
     if (id === currentId) { currentId = null; localStorage.removeItem(CUR_KEY); }
     localStorage.setItem(REG_KEY, JSON.stringify(students));
@@ -1237,19 +1272,30 @@
       sfx.badge();
       renderTeacher();
     } else {
-      document.getElementById('passErr').textContent = 'Wrong passcode. Try again.';
+      document.getElementById('passErr').innerHTML = bi('Wrong passcode. Try again.','رمز خاطئ. حاول مرة أخرى.');
     }
   });
   document.getElementById('passInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('passBtn').click(); });
 
   /* ============ Top bar buttons ============ */
-  function refreshMute() { document.getElementById('muteBtn').textContent = '🔊'; }
-  // Top speaker: read the student's progress aloud.
+  function refreshLang() { document.getElementById('langLbl').textContent = speakLang === 'ar' ? 'ع' : 'EN'; }
+  document.getElementById('langBtn').addEventListener('click', () => {
+    speakLang = speakLang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem(LANG_KEY, speakLang);
+    refreshLang();
+    if (speakLang === 'ar' && !hasArabicVoice()) {
+      showToast('Read-aloud set to Arabic. No Arabic voice on this device — text stays bilingual.',
+                'تم ضبط القراءة على العربية. لا يوجد صوت عربي على هذا الجهاز — يبقى النص بلغتين.', 4200);
+    } else if (speakLang === 'ar') {
+      showToast('Read-aloud: Arabic 🔊', 'القراءة الصوتية: العربية 🔊'); readAloud('Arabic selected', 'تم اختيار العربية');
+    } else {
+      showToast('Read-aloud: English 🔊', 'القراءة الصوتية: الإنجليزية 🔊'); readAloud('English selected', 'تم اختيار الإنجليزية');
+    }
+  });
   document.getElementById('muteBtn').addEventListener('click', () => { sfx.click(); speakStats(); });
-  // Toast speaker: read the latest popup message aloud.
-  document.getElementById('toastSay').addEventListener('click', () => speakClean(lastToast));
+  document.getElementById('toastSay').addEventListener('click', () => readAloud(lastToastEn, lastToastAr));
   document.getElementById('switchBtn').addEventListener('click', () => {
-    if (confirm('Switch student? You can sign back in any time.')) {
+    if (confirm('Switch student? You can sign back in any time.\nتبديل الطالب؟ يمكنك تسجيل الدخول مرة أخرى في أي وقت.')) {
       currentId = null; localStorage.removeItem(CUR_KEY);
       openWelcome();
     }
@@ -1257,15 +1303,15 @@
 
   /* ============ Habits reset ============ */
   document.getElementById('resetBtn').addEventListener('click', () => {
-    if (confirm('Start over? This clears YOUR points, streak, badges and checks.')) {
+    if (confirm('Start over? This clears YOUR points, streak, badges and checks.\nالبدء من جديد؟ سيمسح نقاطك وسلسلتك وأوسمتك وعلاماتك.')) {
       Object.assign(me, ensureStudent({ id: me.id, name: me.name, year: me.year, house: me.house, avatar: me.avatar, checkedDay: todayKey() }));
-      showToast('Fresh start! 🌱');
+      showToast('Fresh start! 🌱', 'بداية جديدة! 🌱');
       render();
     }
   });
 
   /* ============ Welcome / sign-in ============ */
-  let pick = { house: null, avatar: null };
+  let pick = { house: null, avatar: null, lang: 'en' };
 
   function buildPickers() {
     const hp = document.getElementById('housePicker');
@@ -1273,7 +1319,7 @@
     HOUSES.forEach(h => {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'pick'; b.dataset.house = h.key;
-      b.innerHTML = '<span>' + h.emoji + '</span>' + h.name;
+      b.innerHTML = '<span>' + h.emoji + '</span>' + h.name + ' · ' + h.name_ar;
       b.addEventListener('click', () => {
         pick.house = h.key;
         hp.querySelectorAll('.pick').forEach(x => x.classList.toggle('sel', x.dataset.house === h.key));
@@ -1281,6 +1327,7 @@
       });
       hp.appendChild(b);
     });
+
     const ap = document.getElementById('avPicker');
     ap.innerHTML = '';
     AVATARS.forEach(a => {
@@ -1293,14 +1340,23 @@
       });
       ap.appendChild(b);
     });
+
+    const lp = document.getElementById('langPicker');
+    lp.querySelectorAll('.pick').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pick.lang = btn.dataset.lang;
+        lp.querySelectorAll('.pick').forEach(x => x.classList.toggle('sel', x.dataset.lang === pick.lang));
+      });
+    });
   }
 
   function openWelcome() {
-    pick = { house: null, avatar: null };
+    pick = { house: null, avatar: null, lang: speakLang || 'en' };
     document.getElementById('nameInput').value = '';
     document.getElementById('yearSelect').selectedIndex = 0;
     document.getElementById('welcomeErr').textContent = '';
     document.querySelectorAll('#housePicker .pick, #avPicker .av-pick').forEach(x => x.classList.remove('sel'));
+    document.querySelectorAll('#langPicker .pick').forEach(x => x.classList.toggle('sel', x.dataset.lang === pick.lang));
     document.getElementById('welcome').classList.remove('hidden');
   }
 
@@ -1313,14 +1369,18 @@
     const year = document.getElementById('yearSelect').value;
     const err = document.getElementById('welcomeErr');
 
-    if (!name)        { err.textContent = 'Please type your name to begin 🌱'; document.getElementById('nameInput').focus(); return; }
-    if (!year)        { err.textContent = 'Please choose your year 🌿'; return; }
-    if (!pick.house)  { err.textContent = 'Please pick your house 🏠'; return; }
-    if (!pick.avatar) { err.textContent = 'Please choose an avatar 🙂'; return; }
+    if (!name)        { err.innerHTML = bi('Please type your name to begin 🌱','يرجى كتابة اسمك للبدء 🌱'); document.getElementById('nameInput').focus(); return; }
+    if (!year)        { err.innerHTML = bi('Please choose your year 🌿','يرجى اختيار صفك 🌿'); return; }
+    if (!pick.house)  { err.innerHTML = bi('Please pick your house 🏠','يرجى اختيار بيتك 🏠'); return; }
+    if (!pick.avatar) { err.innerHTML = bi('Please choose an avatar 🙂','يرجى اختيار صورة رمزية 🙂'); return; }
+    if (!pick.lang)   { err.innerHTML = bi('Please choose a read-aloud language 🔊','يرجى اختيار لغة القراءة 🔊'); return; }
+
+    speakLang = pick.lang;
+    localStorage.setItem(LANG_KEY, speakLang);
+    refreshLang();
 
     const id = slug(name) + '-y' + year;
     if (students[id]) {
-      // Returning student — resume, but update house/avatar to their latest pick.
       me = ensureStudent(students[id]);
       me.house = pick.house; me.avatar = pick.avatar;
     } else {
@@ -1341,7 +1401,7 @@
   cloudInit();
   buildPickers();
   renderSDG();
-  refreshMute();
+  refreshLang();
   if (currentId && students[currentId]) {
     me = ensureStudent(students[currentId]);
     document.getElementById('welcome').classList.add('hidden');
